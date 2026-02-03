@@ -9,13 +9,43 @@
 
 import SwiftUI
 
+enum SidebarSection: String, CaseIterable {
+    case main = "Main"
+    case people = "People"
+    case tools = "Tools"
+}
+
 enum SidebarItem: String, CaseIterable {
+    // Main
     case dashboard = "Dashboard"
     case meetings = "Meetings"
-    case people = "People"
     case actionItems = "Action Items"
+
+    // People
+    case people = "People"
+    case feedback = "Feedback"
+    case careers = "Careers"
+    case okrs = "OKRs"
+
+    // Tools
     case goals = "Goals"
+    case templates = "Templates"
+    case recordings = "Recordings"
+    case search = "Search"
     case insights = "AI Insights"
+    case teamInsights = "Team Insights"
+    case integrations = "Integrations"
+
+    var section: SidebarSection {
+        switch self {
+        case .dashboard, .meetings, .actionItems:
+            return .main
+        case .people, .feedback, .careers, .okrs:
+            return .people
+        case .goals, .templates, .recordings, .search, .insights, .teamInsights, .integrations:
+            return .tools
+        }
+    }
 
     var icon: String {
         switch self {
@@ -25,6 +55,14 @@ enum SidebarItem: String, CaseIterable {
         case .actionItems: return "checklist"
         case .goals: return "target"
         case .insights: return "sparkles"
+        case .templates: return "doc.text"
+        case .feedback: return "star"
+        case .careers: return "chart.line.uptrend.xyaxis"
+        case .okrs: return "chart.bar.doc.horizontal"
+        case .recordings: return "waveform"
+        case .search: return "magnifyingglass"
+        case .teamInsights: return "chart.pie"
+        case .integrations: return "link"
         }
     }
 
@@ -36,7 +74,27 @@ enum SidebarItem: String, CaseIterable {
         case .actionItems: return ModernColors.orange
         case .goals: return ModernColors.accentGreen
         case .insights: return ModernColors.pink
+        case .templates: return ModernColors.cyan
+        case .feedback: return Color(hex: "#FFD700")
+        case .careers: return ModernColors.purple
+        case .okrs: return ModernColors.orange
+        case .recordings: return ModernColors.red
+        case .search: return ModernColors.textSecondary
+        case .teamInsights: return ModernColors.accentGreen
+        case .integrations: return ModernColors.accentBlue
         }
+    }
+
+    static var mainItems: [SidebarItem] {
+        [.dashboard, .meetings, .actionItems]
+    }
+
+    static var peopleItems: [SidebarItem] {
+        [.people, .feedback, .careers, .okrs]
+    }
+
+    static var toolsItems: [SidebarItem] {
+        [.goals, .templates, .recordings, .search, .insights, .teamInsights, .integrations]
     }
 }
 
@@ -74,6 +132,11 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .newGoal)) { _ in
             showNewGoal = true
         }
+        .onReceive(NotificationCenter.default.publisher(for: .useTemplate)) { notification in
+            if let _ = notification.object as? MeetingTemplate {
+                showNewMeeting = true
+            }
+        }
         .sheet(isPresented: $showNewMeeting) {
             NewMeetingView()
         }
@@ -98,8 +161,24 @@ struct ContentView: View {
 
             // Navigation items
             ScrollView {
-                VStack(spacing: 8) {
-                    ForEach(SidebarItem.allCases, id: \.self) { item in
+                VStack(spacing: 4) {
+                    // Main section
+                    sectionHeader("Main")
+                    ForEach(SidebarItem.mainItems, id: \.self) { item in
+                        sidebarButton(item)
+                    }
+
+                    // People section
+                    sectionHeader("People")
+                        .padding(.top, 12)
+                    ForEach(SidebarItem.peopleItems, id: \.self) { item in
+                        sidebarButton(item)
+                    }
+
+                    // Tools section
+                    sectionHeader("Tools")
+                        .padding(.top, 12)
+                    ForEach(SidebarItem.toolsItems, id: \.self) { item in
                         sidebarButton(item)
                     }
                 }
@@ -118,6 +197,18 @@ struct ContentView: View {
                 .padding(.bottom, 16)
         }
         .background(Color.black.opacity(0.3))
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(ModernColors.textTertiary)
+                .textCase(.uppercase)
+            Spacer()
+        }
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
     }
 
     private var appHeader: some View {
@@ -154,11 +245,11 @@ struct ContentView: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: item.icon)
-                    .font(.system(size: 18))
-                    .frame(width: 24)
+                    .font(.system(size: 16))
+                    .frame(width: 20)
 
                 Text(item.rawValue)
-                    .font(.system(size: 15, weight: selectedItem == item ? .semibold : .medium))
+                    .font(.system(size: 14, weight: selectedItem == item ? .semibold : .medium))
 
                 Spacer()
 
@@ -167,12 +258,22 @@ struct ContentView: View {
                     let count = dataStore.openActionItems().count
                     if count > 0 {
                         Text("\(count)")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 11, weight: .bold))
                             .foregroundColor(.white)
-                            .padding(.horizontal, 8)
+                            .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(ModernColors.orange)
-                            .cornerRadius(10)
+                            .cornerRadius(8)
+                    }
+                }
+
+                // Badge for overdue
+                if item == .actionItems {
+                    let overdue = dataStore.overdueActionItems.count
+                    if overdue > 0 {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(ModernColors.red)
                     }
                 }
             }
@@ -190,7 +291,7 @@ struct ContentView: View {
                 Spacer()
             }
 
-            HStack(spacing: 16) {
+            HStack(spacing: 12) {
                 statBadge(
                     value: dataStore.totalMeetingsThisWeek,
                     label: "Meetings",
@@ -204,9 +305,9 @@ struct ContentView: View {
                 )
 
                 statBadge(
-                    value: dataStore.activeGoals().count,
-                    label: "Goals",
-                    color: ModernColors.accentGreen
+                    value: dataStore.totalFeedbackThisMonth,
+                    label: "Feedback",
+                    color: Color(hex: "#FFD700")
                 )
             }
         }
@@ -220,7 +321,7 @@ struct ContentView: View {
     private func statBadge(value: Int, label: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text("\(value)")
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundColor(color)
 
             Text(label)
@@ -267,6 +368,22 @@ struct ContentView: View {
             GoalsView()
         case .insights:
             AIInsightsView()
+        case .templates:
+            TemplatesView()
+        case .feedback:
+            FeedbackView()
+        case .careers:
+            CareerView()
+        case .okrs:
+            OKRView()
+        case .recordings:
+            RecordingsView()
+        case .search:
+            SearchView()
+        case .teamInsights:
+            TeamInsightsView()
+        case .integrations:
+            IntegrationsView()
         }
     }
 }

@@ -39,6 +39,11 @@ struct ModernColors {
     static let statusHigh = Color(red: 1.0, green: 0.6, blue: 0.2)
     static let statusCritical = Color(red: 1.0, green: 0.3, blue: 0.4)
 
+    // Additional colors
+    static let red = Color(red: 1.0, green: 0.3, blue: 0.3)
+    static let green = Color(red: 0.3, green: 0.9, blue: 0.5)
+    static let background = gradientStart
+
     // Text colors
     static let textPrimary = Color.white
     static let textSecondary = Color.white.opacity(0.7)
@@ -257,5 +262,30 @@ struct SidebarItemStyle: ViewModifier {
 extension View {
     func sidebarItem(isSelected: Bool, color: Color = ModernColors.accent) -> some View {
         modifier(SidebarItemStyle(isSelected: isSelected, color: color))
+    }
+
+    func formLabel() -> some View {
+        self
+            .font(.system(size: 13, weight: .medium))
+            .foregroundColor(ModernColors.textSecondary)
+    }
+
+    func formTextField() -> some View {
+        self
+            .textFieldStyle(.plain)
+            .padding(12)
+            .background(Color.white.opacity(0.05))
+            .cornerRadius(10)
+            .foregroundColor(ModernColors.textPrimary)
+    }
+
+    func primaryButton() -> some View {
+        self
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(ModernColors.cyan)
+            .cornerRadius(10)
     }
 }
