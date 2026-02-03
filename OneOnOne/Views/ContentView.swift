@@ -137,6 +137,15 @@ struct ContentView: View {
                 showNewMeeting = true
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .selectMeeting)) { _ in
+            selectedItem = .meetings
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToActionItems)) { _ in
+            selectedItem = .actionItems
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToGoals)) { _ in
+            selectedItem = .goals
+        }
         .sheet(isPresented: $showNewMeeting) {
             NewMeetingView()
         }

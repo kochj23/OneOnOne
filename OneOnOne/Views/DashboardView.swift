@@ -11,6 +11,10 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject var dataStore: DataStore
+    @State private var selectedMeeting: Meeting?
+    @State private var navigateToMeetings = false
+    @State private var navigateToActionItems = false
+    @State private var navigateToGoals = false
 
     var body: some View {
         ScrollView {
@@ -250,8 +254,27 @@ struct DashboardView: View {
                     .background(ModernColors.orange)
                     .cornerRadius(6)
             }
+
+            // Chevron indicator
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundColor(ModernColors.textTertiary)
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(Color.white.opacity(0.01))
+        .cornerRadius(8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            NotificationCenter.default.post(name: .selectMeeting, object: meeting)
+        }
+        .onHover { hovering in
+            if hovering {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
     }
 
     // MARK: - Action Items
@@ -319,8 +342,27 @@ struct DashboardView: View {
                     .background(Color(hex: person.avatarColor))
                     .cornerRadius(12)
             }
+
+            // Chevron indicator
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundColor(ModernColors.textTertiary)
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(Color.white.opacity(0.01))
+        .cornerRadius(8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            NotificationCenter.default.post(name: .navigateToActionItems, object: nil)
+        }
+        .onHover { hovering in
+            if hovering {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
     }
 
     // MARK: - Goals Progress
@@ -367,6 +409,11 @@ struct DashboardView: View {
                 Text("\(Int(goal.progress * 100))%")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(Color(hex: goal.status.color))
+
+                // Chevron indicator
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundColor(ModernColors.textTertiary)
             }
 
             // Progress bar
@@ -384,6 +431,20 @@ struct DashboardView: View {
             .frame(height: 6)
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(Color.white.opacity(0.01))
+        .cornerRadius(8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            NotificationCenter.default.post(name: .navigateToGoals, object: goal)
+        }
+        .onHover { hovering in
+            if hovering {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
     }
 
     // MARK: - Empty State

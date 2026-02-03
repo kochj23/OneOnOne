@@ -319,6 +319,13 @@ struct MeetingDetailView: View {
     @State private var showAISummary = false
     @State private var aiSummary: String?
     @State private var isGeneratingSummary = false
+    @State private var showAddActionItem = false
+    @State private var newActionItemTitle = ""
+    @State private var newActionItemPriority: Priority = .medium
+    @State private var newActionItemDueDate: Date? = nil
+    @State private var newActionItemAssignee: UUID? = nil
+    @State private var showDueDatePicker = false
+    @State private var aiSummaryError: String? = nil
 
     var body: some View {
         ScrollView {
@@ -480,6 +487,20 @@ struct MeetingDetailView: View {
                 }
             }
 
+            // AI Summary error
+            if let error = aiSummaryError {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(ModernColors.orange)
+                    Text(error)
+                        .font(.system(size: 13))
+                        .foregroundColor(ModernColors.orange)
+                }
+                .padding(12)
+                .background(ModernColors.orange.opacity(0.1))
+                .cornerRadius(10)
+            }
+
             // AI Summary
             if let summary = meeting.summary ?? aiSummary {
                 VStack(alignment: .leading, spacing: 8) {
@@ -514,10 +535,24 @@ struct MeetingDetailView: View {
                 Text("\(meeting.completedActionItemsCount)/\(meeting.actionItems.count)")
                     .font(.system(size: 13))
                     .foregroundColor(ModernColors.textTertiary)
+
+                Button {
+                    showAddActionItem.toggle()
+                } label: {
+                    Image(systemName: showAddActionItem ? "minus.circle.fill" : "plus.circle.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(ModernColors.accentGreen)
+                }
+                .buttonStyle(.plain)
             }
 
-            if meeting.actionItems.isEmpty {
-                Text("No action items")
+            // Add action item form
+            if showAddActionItem {
+                addActionItemForm
+            }
+
+            if meeting.actionItems.isEmpty && !showAddActionItem {
+                Text("No action items. Click + to add one.")
                     .font(.system(size: 14))
                     .foregroundColor(ModernColors.textTertiary)
             } else {
@@ -527,6 +562,164 @@ struct MeetingDetailView: View {
             }
         }
         .glassCard()
+    }
+
+    private var addActionItemForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Title field
+            TextField("Action item title...", text: $newActionItemTitle)
+                .textFieldStyle(.plain)
+                .font(.system(size: 14))
+                .foregroundColor(ModernColors.textPrimary)
+                .padding(12)
+                .background(Color.white.opacity(0.05))
+                .cornerRadius(10)
+
+            HStack(spacing: 12) {
+                // Priority picker
+                Menu {
+                    ForEach(Priority.allCases, id: \.self) { priority in
+                        Button {
+                            newActionItemPriority = priority
+                        } label: {
+                            Label(priority.rawValue, systemImage: priority.icon)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: newActionItemPriority.icon)
+                        Text(newActionItemPriority.rawValue)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10))
+                    }
+                    .font(.system(size: 13))
+                    .foregroundColor(Color(hex: newActionItemPriority.color))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(hex: newActionItemPriority.color).opacity(0.2))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+
+                // Due date picker
+                Button {
+                    showDueDatePicker.toggle()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                        Text(newActionItemDueDate?.formatted(date: .abbreviated, time: .omitted) ?? "Set Due Date")
+                    }
+                    .font(.system(size: 13))
+                    .foregroundColor(newActionItemDueDate != nil ? ModernColors.accentBlue : ModernColors.textSecondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showDueDatePicker) {
+                    VStack {
+                        DatePicker("Due Date", selection: Binding(
+                            get: { newActionItemDueDate ?? Date() },
+                            set: { newActionItemDueDate = $0 }
+                        ), displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .padding()
+
+                        HStack {
+                            Button("Clear") {
+                                newActionItemDueDate = nil
+                                showDueDatePicker = false
+                            }
+                            .foregroundColor(.red)
+
+                            Spacer()
+
+                            Button("Done") {
+                                showDueDatePicker = false
+                            }
+                        }
+                        .padding()
+                    }
+                    .frame(width: 300, height: 350)
+                }
+
+                // Assignee picker
+                Menu {
+                    Button("Unassigned") {
+                        newActionItemAssignee = nil
+                    }
+                    Divider()
+                    ForEach(dataStore.people) { person in
+                        Button {
+                            newActionItemAssignee = person.id
+                        } label: {
+                            Text(person.name)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person")
+                        if let assigneeId = newActionItemAssignee,
+                           let person = dataStore.person(for: assigneeId) {
+                            Text(person.name)
+                        } else {
+                            Text("Assign")
+                        }
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10))
+                    }
+                    .font(.system(size: 13))
+                    .foregroundColor(ModernColors.textSecondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                // Add button
+                Button {
+                    addActionItem()
+                } label: {
+                    Text("Add")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(newActionItemTitle.isEmpty ? Color.gray : ModernColors.accentGreen)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                .disabled(newActionItemTitle.isEmpty)
+            }
+        }
+        .padding(12)
+        .background(Color.white.opacity(0.03))
+        .cornerRadius(12)
+    }
+
+    private func addActionItem() {
+        guard !newActionItemTitle.isEmpty else { return }
+
+        let actionItem = ActionItem(
+            title: newActionItemTitle,
+            assigneeId: newActionItemAssignee,
+            dueDate: newActionItemDueDate,
+            priority: newActionItemPriority,
+            meetingId: meeting.id
+        )
+
+        dataStore.addActionItem(actionItem, to: meeting.id)
+
+        // Reset form
+        newActionItemTitle = ""
+        newActionItemPriority = .medium
+        newActionItemDueDate = nil
+        newActionItemAssignee = nil
+        showAddActionItem = false
     }
 
     private func actionItemRow(index: Int) -> some View {
@@ -620,8 +813,12 @@ struct MeetingDetailView: View {
     }
 
     private func generateSummary() {
-        guard !meeting.notes.isEmpty else { return }
+        guard !meeting.notes.isEmpty else {
+            aiSummaryError = "Please add meeting notes first before generating a summary."
+            return
+        }
 
+        aiSummaryError = nil
         isGeneratingSummary = true
         Task {
             do {
@@ -640,6 +837,7 @@ struct MeetingDetailView: View {
             } catch {
                 await MainActor.run {
                     isGeneratingSummary = false
+                    aiSummaryError = "AI Summary failed: \(error.localizedDescription)"
                 }
                 print("AI Summary error: \(error)")
             }

@@ -299,10 +299,24 @@ class DataStore: ObservableObject {
         allActionItems().filter { $0.assigneeId == personId }
     }
 
+    func addActionItem(_ actionItem: ActionItem, to meetingId: UUID) {
+        if let meetingIndex = meetings.firstIndex(where: { $0.id == meetingId }) {
+            meetings[meetingIndex].actionItems.append(actionItem)
+            saveData()
+        }
+    }
+
     func updateActionItem(_ actionItem: ActionItem, in meetingId: UUID) {
         if let meetingIndex = meetings.firstIndex(where: { $0.id == meetingId }),
            let itemIndex = meetings[meetingIndex].actionItems.firstIndex(where: { $0.id == actionItem.id }) {
             meetings[meetingIndex].actionItems[itemIndex] = actionItem
+            saveData()
+        }
+    }
+
+    func deleteActionItem(_ actionItemId: UUID, from meetingId: UUID) {
+        if let meetingIndex = meetings.firstIndex(where: { $0.id == meetingId }) {
+            meetings[meetingIndex].actionItems.removeAll { $0.id == actionItemId }
             saveData()
         }
     }

@@ -80,4 +80,7 @@ extension Notification.Name {
     static let newMeeting = Notification.Name("newMeeting")
     static let newPerson = Notification.Name("newPerson")
     static let newGoal = Notification.Name("newGoal")
+    static let selectMeeting = Notification.Name("selectMeeting")
+    static let navigateToActionItems = Notification.Name("navigateToActionItems")
+    static let navigateToGoals = Notification.Name("navigateToGoals")
 }
