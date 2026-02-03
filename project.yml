@@ -1,0 +1,42 @@
+name: OneOnOne
+options:
+  bundleIdPrefix: com.jordankoch
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: "QRRCB8HB3W"
+
+targets:
+  OneOnOne:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: OneOnOne
+        excludes:
+          - "**/.DS_Store"
+      - path: Python
+        excludes:
+          - "**/.DS_Store"
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: OneOnOne/OneOnOne.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_HARDENED_RUNTIME: YES
+        COMBINE_HIDPI_IMAGES: YES
