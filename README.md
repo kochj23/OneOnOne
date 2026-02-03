@@ -1,5 +1,7 @@
 # OneOnOne
 
+![OneOnOne Screenshot](screenshots/app-screenshot.png)
+
 AI-assisted app for managing 1:1 and team meetings on macOS.
 
 ## Features
