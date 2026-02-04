@@ -118,7 +118,9 @@ struct NewGoalView: View {
                     formSection(title: "Target Date") {
                         HStack {
                             Toggle("Set target date", isOn: $hasTargetDate)
+                                #if os(macOS)
                                 .toggleStyle(.checkbox)
+                                #endif
                                 .foregroundColor(ModernColors.textSecondary)
 
                             if hasTargetDate {

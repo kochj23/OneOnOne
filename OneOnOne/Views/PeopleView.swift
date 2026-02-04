@@ -27,6 +27,7 @@ struct PeopleView: View {
     }
 
     var body: some View {
+        #if os(macOS)
         HSplitView {
             // People list
             peopleList
@@ -42,6 +43,49 @@ struct PeopleView: View {
         .sheet(isPresented: $showNewPerson) {
             NewPersonView()
         }
+        #else
+        NavigationStack {
+            List(filteredPeople) { person in
+                NavigationLink(value: person) {
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Text(String(person.name.prefix(1)))
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            )
+                        VStack(alignment: .leading) {
+                            Text(person.name)
+                                .font(.headline)
+                            if let title = person.title {
+                                Text(title)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("People")
+            .navigationDestination(for: Person.self) { person in
+                PersonDetailView(person: binding(for: person))
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showNewPerson = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showNewPerson) {
+            NewPersonView()
+        }
+        #endif
     }
 
     // MARK: - People List

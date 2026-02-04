@@ -37,6 +37,7 @@ struct GoalsView: View {
     }
 
     var body: some View {
+        #if os(macOS)
         HSplitView {
             // Goals list
             goalsList
@@ -52,6 +53,39 @@ struct GoalsView: View {
         .sheet(isPresented: $showNewGoal) {
             NewGoalView()
         }
+        #else
+        NavigationStack {
+            List(filteredGoals) { goal in
+                NavigationLink(value: goal) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(goal.title)
+                            .font(.headline)
+                        ProgressView(value: goal.progress, total: 100)
+                            .tint(.green)
+                        Text(goal.status.rawValue)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .navigationTitle("Goals")
+            .navigationDestination(for: Goal.self) { goal in
+                GoalDetailView(goal: binding(for: goal))
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showNewGoal = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showNewGoal) {
+            NewGoalView()
+        }
+        #endif
     }
 
     // MARK: - Goals List
@@ -680,6 +714,7 @@ struct GoalDetailView: View {
         newMilestoneTitle = ""
     }
 
+    #if os(macOS)
     private func analyzeGoal() {
         isAnalyzing = true
         Task {
@@ -703,6 +738,11 @@ struct GoalDetailView: View {
             }
         }
     }
+    #else
+    private func analyzeGoal() {
+        // AI features only available on macOS
+    }
+    #endif
 }
 
 #Preview {

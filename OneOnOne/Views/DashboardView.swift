@@ -268,6 +268,7 @@ struct DashboardView: View {
         .onTapGesture {
             NotificationCenter.default.post(name: .selectMeeting, object: meeting)
         }
+        #if os(macOS)
         .onHover { hovering in
             if hovering {
                 NSCursor.pointingHand.push()
@@ -275,6 +276,7 @@ struct DashboardView: View {
                 NSCursor.pop()
             }
         }
+        #endif
     }
 
     // MARK: - Action Items
@@ -356,6 +358,7 @@ struct DashboardView: View {
         .onTapGesture {
             NotificationCenter.default.post(name: .navigateToActionItems, object: nil)
         }
+        #if os(macOS)
         .onHover { hovering in
             if hovering {
                 NSCursor.pointingHand.push()
@@ -363,6 +366,7 @@ struct DashboardView: View {
                 NSCursor.pop()
             }
         }
+        #endif
     }
 
     // MARK: - Goals Progress
@@ -438,6 +442,7 @@ struct DashboardView: View {
         .onTapGesture {
             NotificationCenter.default.post(name: .navigateToGoals, object: goal)
         }
+        #if os(macOS)
         .onHover { hovering in
             if hovering {
                 NSCursor.pointingHand.push()
@@ -445,6 +450,7 @@ struct DashboardView: View {
                 NSCursor.pop()
             }
         }
+        #endif
     }
 
     // MARK: - Empty State

@@ -9,6 +9,7 @@
 
 import SwiftUI
 
+#if os(macOS)
 struct IntegrationsView: View {
     @StateObject private var integrationService = IntegrationService.shared
     @State private var showSlackSetup = false
@@ -487,3 +488,4 @@ struct TeamsSetupView: View {
 #Preview {
     IntegrationsView()
 }
+#endif  // os(macOS)

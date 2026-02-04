@@ -8,6 +8,8 @@
 //
 
 import SwiftUI
+
+#if os(macOS)
 import AVFoundation
 
 struct RecordingsView: View {
@@ -567,3 +569,4 @@ struct TranscriptionView: View {
     RecordingsView()
         .environmentObject(DataStore.shared)
 }
+#endif  // os(macOS)

@@ -8,6 +8,8 @@
 //
 
 import Foundation
+
+#if !os(tvOS)
 import EventKit
 
 @MainActor
@@ -89,7 +91,6 @@ class CalendarService: ObservableObject {
         }
 
         // Add attendees
-        var ekAttendees: [EKParticipant] = []
         for person in attendees {
             if let email = person.email {
                 // Note: Creating EKParticipant programmatically is limited
@@ -288,3 +289,4 @@ enum CalendarError: LocalizedError {
         }
     }
 }
+#endif  // !os(tvOS)

@@ -9,7 +9,15 @@
 
 import Foundation
 
-struct Goal: Identifiable, Codable {
+struct Goal: Identifiable, Codable, Hashable {
+    static func == (lhs: Goal, rhs: Goal) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     let id: UUID
     var title: String
     var description: String?

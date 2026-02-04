@@ -12,15 +12,29 @@ import SwiftUI
 @main
 struct OneOnOneApp: App {
     @StateObject private var dataStore = DataStore.shared
-    @StateObject private var calendarService = CalendarService.shared
     @StateObject private var syncService = SyncService.shared
+    @StateObject private var cloudKitService = CloudKitService.shared
+
+    #if !os(tvOS)
+    @StateObject private var calendarService = CalendarService.shared
+    #endif
+
+    init() {
+        // Trigger initial iCloud sync on launch
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000) // Wait 2 seconds for app to settle
+            await CloudKitService.shared.sync()
+        }
+    }
 
     var body: some Scene {
+        #if os(macOS)
         WindowGroup {
             ContentView()
                 .environmentObject(dataStore)
                 .environmentObject(calendarService)
                 .environmentObject(syncService)
+                .environmentObject(cloudKitService)
                 .preferredColorScheme(.dark)
         }
         .windowStyle(.hiddenTitleBar)
@@ -65,12 +79,41 @@ struct OneOnOneApp: App {
                         try? await syncService.createBackup()
                     }
                 }
+
+                Divider()
+
+                Button("Sync with iCloud") {
+                    Task {
+                        await cloudKitService.sync()
+                    }
+                }
+                .keyboardShortcut("s", modifiers: [.command, .option])
             }
         }
 
         Settings {
             SettingsView()
         }
+
+        #elseif os(iOS)
+        WindowGroup {
+            ContentView()
+                .environmentObject(dataStore)
+                .environmentObject(calendarService)
+                .environmentObject(syncService)
+                .environmentObject(cloudKitService)
+                .preferredColorScheme(.dark)
+        }
+
+        #elseif os(tvOS)
+        WindowGroup {
+            ContentView()
+                .environmentObject(dataStore)
+                .environmentObject(syncService)
+                .environmentObject(cloudKitService)
+                .preferredColorScheme(.dark)
+        }
+        #endif
     }
 }
 

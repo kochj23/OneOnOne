@@ -3,18 +3,20 @@ options:
   bundleIdPrefix: com.jordankoch
   deploymentTarget:
     macOS: "14.0"
+    iOS: "17.0"
   xcodeVersion: "15.0"
   groupSortPosition: top
   generateEmptyDirectories: true
 
 settings:
   base:
-    MARKETING_VERSION: "1.1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    MARKETING_VERSION: "2.0.0"
+    CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.9"
     DEVELOPMENT_TEAM: "QRRCB8HB3W"
 
 targets:
+  # macOS Target
   OneOnOne:
     type: application
     platform: macOS
@@ -40,3 +42,52 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_HARDENED_RUNTIME: YES
         COMBINE_HIDPI_IMAGES: YES
+
+  # iOS Target
+  OneOnOne-iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: OneOnOne
+        excludes:
+          - "**/.DS_Store"
+          - "**/ai_daemon.py"
+          - "**/whisper_transcribe.py"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_NSCalendarsUsageDescription: "OneOnOne needs access to your calendar to create and sync meeting events."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "OneOnOne needs microphone access to record meeting audio."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: OneOnOne/OneOnOne-iOS.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+
+schemes:
+  OneOnOne:
+    build:
+      targets:
+        OneOnOne: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+  OneOnOne-iOS:
+    build:
+      targets:
+        OneOnOne-iOS: all
+    run:
+      config: Debug
+    archive:
+      config: Release

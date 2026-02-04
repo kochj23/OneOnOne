@@ -60,6 +60,7 @@ struct MeetingsView: View {
     }
 
     var body: some View {
+        #if os(macOS)
         HSplitView {
             // Meeting list
             meetingsList
@@ -75,6 +76,37 @@ struct MeetingsView: View {
         .sheet(isPresented: $showNewMeeting) {
             NewMeetingView()
         }
+        #else
+        NavigationStack {
+            List(filteredMeetings) { meeting in
+                NavigationLink(value: meeting) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(meeting.title)
+                            .font(.headline)
+                        Text(meeting.date.formatted(date: .abbreviated, time: .shortened))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .navigationTitle("Meetings")
+            .navigationDestination(for: Meeting.self) { meeting in
+                MeetingDetailView(meeting: binding(for: meeting))
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showNewMeeting = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showNewMeeting) {
+            NewMeetingView()
+        }
+        #endif
     }
 
     // MARK: - Meetings List
@@ -812,6 +844,7 @@ struct MeetingDetailView: View {
         .glassCard()
     }
 
+    #if os(macOS)
     private func generateSummary() {
         guard !meeting.notes.isEmpty else {
             aiSummaryError = "Please add meeting notes first before generating a summary."
@@ -843,6 +876,11 @@ struct MeetingDetailView: View {
             }
         }
     }
+    #else
+    private func generateSummary() {
+        aiSummaryError = "AI features are only available on macOS"
+    }
+    #endif
 }
 
 #Preview {

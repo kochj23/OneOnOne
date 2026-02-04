@@ -8,7 +8,11 @@
 //
 
 import Foundation
+import SwiftUI
+
+#if os(macOS)
 import AppKit
+#endif
 
 @MainActor
 class SyncService: ObservableObject {
@@ -20,11 +24,16 @@ class SyncService: ObservableObject {
     @Published var isImporting = false
     @Published var lastError: String?
 
+    // For iOS share sheet
+    @Published var exportedFileURL: URL?
+    @Published var showingShareSheet = false
+
     private init() {}
 
     // MARK: - Export
 
-    /// Exports all data to a file
+    #if os(macOS)
+    /// Exports all data to a file (macOS - uses NSSavePanel)
     func exportData() async {
         isExporting = true
         lastError = nil
@@ -59,19 +68,7 @@ class SyncService: ObservableObject {
         }
     }
 
-    /// Exports data to a specific URL (for automated sync)
-    func exportData(to url: URL) async throws {
-        guard let data = DataStore.shared.exportData() else {
-            throw SyncError.exportFailed
-        }
-
-        try data.write(to: url)
-        lastExportDate = Date()
-    }
-
-    // MARK: - Import
-
-    /// Imports data from a file
+    /// Imports data from a file (macOS - uses NSOpenPanel)
     func importData() async {
         isImporting = true
         lastError = nil
@@ -103,15 +100,87 @@ class SyncService: ObservableObject {
         }
     }
 
-    /// Imports data from a specific URL
-    func importData(from url: URL) async throws {
+    #elseif os(iOS)
+    /// Exports all data to a file (iOS - creates file for share sheet)
+    func exportData() async {
+        isExporting = true
+        lastError = nil
+
+        defer { isExporting = false }
+
+        guard let data = DataStore.shared.exportData() else {
+            lastError = "Failed to prepare export data"
+            return
+        }
+
+        // Create temp file for sharing
+        let tempDir = FileManager.default.temporaryDirectory
+        let filename = "OneOnOne-Export-\(formatDate(Date())).json"
+        let fileURL = tempDir.appendingPathComponent(filename)
+
+        do {
+            try data.write(to: fileURL)
+            exportedFileURL = fileURL
+            showingShareSheet = true
+            lastExportDate = Date()
+            print("Data exported to: \(fileURL.path)")
+        } catch {
+            lastError = "Export failed: \(error.localizedDescription)"
+            print("Export error: \(error)")
+        }
+    }
+
+    /// Imports data from a URL (iOS - called from document picker)
+    func importData(from url: URL) async {
+        isImporting = true
+        lastError = nil
+
+        defer { isImporting = false }
+
+        do {
+            // Start accessing security-scoped resource
+            guard url.startAccessingSecurityScopedResource() else {
+                lastError = "Cannot access file"
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            let data = try Data(contentsOf: url)
+            try DataStore.shared.importData(from: data)
+            lastImportDate = Date()
+            print("Data imported from: \(url.path)")
+        } catch {
+            lastError = "Import failed: \(error.localizedDescription)"
+            print("Import error: \(error)")
+        }
+    }
+
+    /// Stub for iOS (not used - uses document picker instead)
+    func importData() async {
+        // iOS uses document picker - this is handled by the UI
+    }
+    #endif
+
+    /// Exports data to a specific URL (for automated sync - all platforms)
+    func exportData(to url: URL) async throws {
+        guard let data = DataStore.shared.exportData() else {
+            throw SyncError.exportFailed
+        }
+
+        try data.write(to: url)
+        lastExportDate = Date()
+    }
+
+    /// Imports data from a specific URL (all platforms)
+    func importDataFromURL(_ url: URL) async throws {
         let data = try Data(contentsOf: url)
         try DataStore.shared.importData(from: data)
         lastImportDate = Date()
     }
 
-    // MARK: - Auto Sync
+    // MARK: - Auto Sync (macOS only - uses file system watches)
 
+    #if os(macOS)
     /// Sets up automatic sync to a folder
     func setupAutoSync(folder: URL, interval: TimeInterval = 3600) {
         // Create sync timer
@@ -134,7 +203,7 @@ class SyncService: ObservableObject {
                    let lastExport = lastExportDate,
                    modDate > lastExport {
                     // Remote is newer - import
-                    try await importData(from: fileURL)
+                    try await importDataFromURL(fileURL)
                     return
                 }
             } catch {
@@ -149,8 +218,9 @@ class SyncService: ObservableObject {
             print("Auto sync export failed: \(error)")
         }
     }
+    #endif
 
-    // MARK: - Backup
+    // MARK: - Backup (all platforms)
 
     /// Creates a timestamped backup
     func createBackup() async throws -> URL {
@@ -200,7 +270,7 @@ class SyncService: ObservableObject {
 
     /// Restores from a backup
     func restoreBackup(from url: URL) async throws {
-        try await importData(from: url)
+        try await importDataFromURL(url)
     }
 
     // MARK: - Helpers
@@ -252,3 +322,47 @@ enum SyncError: LocalizedError {
         }
     }
 }
+
+// MARK: - Share Sheet for iOS
+
+#if os(iOS)
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+struct DocumentPicker: UIViewControllerRepresentable {
+    let onPick: (URL) -> Void
+
+    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json])
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onPick: onPick)
+    }
+
+    class Coordinator: NSObject, UIDocumentPickerDelegate {
+        let onPick: (URL) -> Void
+
+        init(onPick: @escaping (URL) -> Void) {
+            self.onPick = onPick
+        }
+
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            if let url = urls.first {
+                onPick(url)
+            }
+        }
+    }
+}
+#endif

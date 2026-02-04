@@ -9,50 +9,93 @@
 /* Begin PBXBuildFile section */
 		0087E09BE6DE82DA0C7836A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6AF5292F111CC503638B10 /* ContentView.swift */; };
 		04708F0BA68BEF73A6DA2972 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58E4850AE87DD8616025749 /* AIService.swift */; };
+		068739821EB980C8D765845D /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3AE0BD5CB67112935B95F2 /* Template.swift */; };
+		09140FC1FA8313F9C2D9A6CC /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */; };
 		096991FDFC2FB502D97D36E9 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */; };
 		0CD746CD08B26F33EF041D85 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
 		0F5B73E6E647822A8934AD5E /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927983B03290EA43DD6D2F63 /* TemplatesView.swift */; };
 		17B8894C30EF67C70A077050 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA822A2312A387AE94A4B5 /* Meeting.swift */; };
+		1FFBB237EA6207A74D9E9773 /* OneOnOneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8BF148153F2CDDB3A18BB86 /* OneOnOneApp.swift */; };
+		205B5474DE90DB3B4337DE55 /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CD6913D74C2D1B226AADB2 /* Goal.swift */; };
 		23F5067858BCC6032D34491E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561DE74CEF4893A0CE0F63A /* SettingsView.swift */; };
+		255CA071D00663D78FB89F08 /* PeopleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF68654B6E0064061062E0D /* PeopleView.swift */; };
 		2771781ADE432F697E037763 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B6D18D72535ABF30159519 /* MeetingsView.swift */; };
 		2D4335CDCB9B1788C9680477 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D943A2964A91874A193C966 /* ModernDesign.swift */; };
 		315FCDD5F365F07868712C50 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */; };
+		319732CD46513B79C4E94BCF /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
+		3425FE8A99A486BD94A1299C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6AF5292F111CC503638B10 /* ContentView.swift */; };
 		34618DCDF349A53DF85D0E0B /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */; };
+		348FBA114B2B1BF410E50BDC /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA822A2312A387AE94A4B5 /* Meeting.swift */; };
 		3CE01959219F7AC9D2092CB2 /* OneOnOneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8BF148153F2CDDB3A18BB86 /* OneOnOneApp.swift */; };
+		3EF003D0E27BCEB52F31F15D /* OKR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF636DDD4D792771AE0F8B /* OKR.swift */; };
+		3F7FFF84BC120EA4AFB604E8 /* NewMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */; };
 		4101AF81FEA88C348B64E008 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BD04B9BA820D820CB77AF8 /* SyncService.swift */; };
+		480E42D76BA1B2B01BD59870 /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
+		4D3259A8683F672E420F2969 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BD04B9BA820D820CB77AF8 /* SyncService.swift */; };
+		5125233AA9078CDCB887D08D /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
+		51676A45F4572A33644AEB98 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88504C6CEB2F176EB3543CB5 /* Recording.swift */; };
 		54294A3EA5A1B9B1C7CEF67A /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
+		5439EBC17514386AFE0EBBE6 /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
+		569801E69ECF98D072C3F0C5 /* TeamInsightsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */; };
+		575DC1A44C7DB470B62E63E2 /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927983B03290EA43DD6D2F63 /* TemplatesView.swift */; };
 		5B9FEC0CC61C0F1A634C57DC /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2055EBB6D3148A32F9AE68 /* SearchView.swift */; };
+		5CA9320721DA21D69EA543D9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561DE74CEF4893A0CE0F63A /* SettingsView.swift */; };
+		5D4D18208D647BE8C4C49D77 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2055EBB6D3148A32F9AE68 /* SearchView.swift */; };
 		67792FF7FCEECA83A3DA3F5E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3AE0BD5CB67112935B95F2 /* Template.swift */; };
 		67C343E2AE007C051F7C642B /* PeopleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF68654B6E0064061062E0D /* PeopleView.swift */; };
 		67F435A8F3D132AA527BE43D /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CD6913D74C2D1B226AADB2 /* Goal.swift */; };
+		6AEF37D8426389A5DD20499F /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369280E760FB6F801B312C83 /* SearchService.swift */; };
+		6B45E4F059B95187B232EB2D /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94323C60AACD636CE2E2C34E /* RecordingsView.swift */; };
+		6C02E2AB51F4D28E7B9F4054 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B6D18D72535ABF30159519 /* MeetingsView.swift */; };
 		6D2FBA0200D3395BB1FD78FA /* IntegrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038D00229054740213C66535 /* IntegrationService.swift */; };
 		6DAC6516D5E9A62B414B021A /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94323C60AACD636CE2E2C34E /* RecordingsView.swift */; };
+		6E374587DDFEF7235C4E321D /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */; };
 		6FD6D031B73178BF72F7E8E0 /* CareerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CA6A6623896F6D970D28D1 /* CareerView.swift */; };
+		77FC3AA704C8BE2CAB57C70A /* TeamInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85152DCACCCFD436EB19059 /* TeamInsightsView.swift */; };
 		77FEBF5864FE66F6977D9CD3 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */; };
+		78286AE444C01ED8B2AF68D3 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58E4850AE87DD8616025749 /* AIService.swift */; };
+		79FE395524C0CBADF5C180C0 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */; };
+		7FAF12F66AD08EB83D2A6B99 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D943A2964A91874A193C966 /* ModernDesign.swift */; };
 		811E1A89E640432B021A0041 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369280E760FB6F801B312C83 /* SearchService.swift */; };
+		8133482FC6D13E1ECFF649EA /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */; };
 		853F7D5F70A0F06DC6C3EAC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B9DCDAD7D7C8828B535824 /* Assets.xcassets */; };
 		8C2F4AB3A073DE16B63C2477 /* ai_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = 3E02E89F96D802B33F3A8068 /* ai_daemon.py */; };
 		8EEB4F41EE6AC9559C121784 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */; };
+		958AB77E9739B7C028750D36 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */; };
 		9940D3798108B6DC24F207EF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		99924DF63640788E14E4A454 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
 		9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
 		A14923D8D92573F2E412CE73 /* CareerDevelopment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */; };
+		A4389EABCAFB1D0B7B9DF062 /* CareerDevelopment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */; };
+		A67E6632495A29734BA56F77 /* NewPersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51BF8E4E3AC222C5D2FAA4F9 /* NewPersonView.swift */; };
+		B3577E7EBE38F886DBCFC109 /* IntegrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038D00229054740213C66535 /* IntegrationService.swift */; };
+		B63BE768990B5FE603180C82 /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
 		B683BC605A3410B131A90127 /* TeamInsightsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */; };
 		C1BC231E6423A0B7E27C01B5 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
+		C38153F1D6CF3CA7C3ED6C9B /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		C8FABB3D7803A54BB2994DEE /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
 		CC9156DE1E234C204B0ACBFC /* OKR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF636DDD4D792771AE0F8B /* OKR.swift */; };
+		CF21E0DD62DA8EC05A97E705 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
+		CF5C5B4258A2CC3F158978D2 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
+		D21E1FFC31914BB438EF8B20 /* ActionItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */; };
 		D811904952AA8B5AD2A4289E /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
+		D90DBC41B8ECA03F94AE6F61 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B9DCDAD7D7C8828B535824 /* Assets.xcassets */; };
 		DAD92485D566C6DD5E57C032 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5CED1E740986B30F62332F /* GoalsView.swift */; };
 		E37A7C5BA157443C1D6B072F /* TeamInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85152DCACCCFD436EB19059 /* TeamInsightsView.swift */; };
 		EC3F8BEB4E07456F0DEC1993 /* NewMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */; };
 		EF02A07B4800A80F26DACA51 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88504C6CEB2F176EB3543CB5 /* Recording.swift */; };
+		F17D2D1D836E057E30B0D54D /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */; };
 		F4741BD519C55800AC104B77 /* NewPersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51BF8E4E3AC222C5D2FAA4F9 /* NewPersonView.swift */; };
+		F828014B7935AE066B158FC7 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */; };
+		F8A9A850C82CA48FFE5ECF34 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5CED1E740986B30F62332F /* GoalsView.swift */; };
 		F917288A76F209C82D2A6F67 /* whisper_transcribe.py in Resources */ = {isa = PBXBuildFile; fileRef = 429920CE0AA2963935EB4FDB /* whisper_transcribe.py */; };
 		FCA301B7D70DF75BE456961A /* ActionItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */; };
+		FD07075F84C393B9BE275D3F /* CareerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CA6A6623896F6D970D28D1 /* CareerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		038D00229054740213C66535 /* IntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationService.swift; sourceTree = "<group>"; };
+		094826448727DC98383595A1 /* OneOnOne-tvOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OneOnOne-tvOS.entitlements"; sourceTree = "<group>"; };
 		0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInsightsService.swift; sourceTree = "<group>"; };
 		0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMeetingView.swift; sourceTree = "<group>"; };
 		1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
@@ -60,6 +103,7 @@
 		23BD04B9BA820D820CB77AF8 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
 		27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
+		2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitService.swift; sourceTree = "<group>"; };
 		34B9DCDAD7D7C8828B535824 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		369280E760FB6F801B312C83 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		3E02E89F96D802B33F3A8068 /* ai_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ai_daemon.py; sourceTree = "<group>"; };
@@ -70,6 +114,7 @@
 		6CAA822A2312A387AE94A4B5 /* Meeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meeting.swift; sourceTree = "<group>"; };
 		6D2055EBB6D3148A32F9AE68 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		795D046D558A243A2F0E09CF /* Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feedback.swift; sourceTree = "<group>"; };
+		79EA35EAFA62138C0431A8F6 /* OneOnOne-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "OneOnOne-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8252D1622BAD4A0242E17DF5 /* Sentiment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sentiment.swift; sourceTree = "<group>"; };
 		82A831B431E24CF97F1169A2 /* OneOnOne.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneOnOne.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82CC82841C71E6DDE6BF9F31 /* OKRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKRView.swift; sourceTree = "<group>"; };
@@ -89,6 +134,7 @@
 		BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerDevelopment.swift; sourceTree = "<group>"; };
 		CFF68654B6E0064061062E0D /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemsView.swift; sourceTree = "<group>"; };
+		D8EC98E8254172A18F3FD76E /* OneOnOne-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OneOnOne-iOS.entitlements"; sourceTree = "<group>"; };
 		DD3AE0BD5CB67112935B95F2 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		E561DE74CEF4893A0CE0F63A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
@@ -113,6 +159,7 @@
 			children = (
 				F58E4850AE87DD8616025749 /* AIService.swift */,
 				BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */,
+				2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */,
 				1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */,
 				038D00229054740213C66535 /* IntegrationService.swift */,
 				F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */,
@@ -140,6 +187,8 @@
 				46D2A1607D1858905177CA12 /* Services */,
 				F6DB69545F9D053B12E684E2 /* ViewModels */,
 				E152F9A938707B98DC4B3256 /* Views */,
+				D8EC98E8254172A18F3FD76E /* OneOnOne-iOS.entitlements */,
+				094826448727DC98383595A1 /* OneOnOne-tvOS.entitlements */,
 				6138A8EB527BB438E73208F4 /* OneOnOne.entitlements */,
 				A8BF148153F2CDDB3A18BB86 /* OneOnOneApp.swift */,
 			);
@@ -216,6 +265,7 @@
 		FF7D67202693A3DD8C3C71C2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				79EA35EAFA62138C0431A8F6 /* OneOnOne-iOS.app */,
 				82A831B431E24CF97F1169A2 /* OneOnOne.app */,
 			);
 			name = Products;
@@ -242,6 +292,24 @@
 			productReference = 82A831B431E24CF97F1169A2 /* OneOnOne.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F18A578DBB3DDDCDAE541057 /* OneOnOne-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6043CD3E6E3DF370B9B42218 /* Build configuration list for PBXNativeTarget "OneOnOne-iOS" */;
+			buildPhases = (
+				CE5CA8A48D5946C71627C2E3 /* Sources */,
+				8B8252695632E593ACCD3270 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OneOnOne-iOS";
+			packageProductDependencies = (
+			);
+			productName = "OneOnOne-iOS";
+			productReference = 79EA35EAFA62138C0431A8F6 /* OneOnOne-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -252,6 +320,10 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					114DC1A6BA3D030E09A7E60F = {
+						DevelopmentTeam = QRRCB8HB3W;
+						ProvisioningStyle = Automatic;
+					};
+					F18A578DBB3DDDCDAE541057 = {
 						DevelopmentTeam = QRRCB8HB3W;
 						ProvisioningStyle = Automatic;
 					};
@@ -272,11 +344,20 @@
 			projectRoot = "";
 			targets = (
 				114DC1A6BA3D030E09A7E60F /* OneOnOne */,
+				F18A578DBB3DDDCDAE541057 /* OneOnOne-iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8B8252695632E593ACCD3270 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D90DBC41B8ECA03F94AE6F61 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DF08BDB6FAE5CE4FD5DA8D9E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -301,6 +382,7 @@
 				99924DF63640788E14E4A454 /* CalendarService.swift in Sources */,
 				A14923D8D92573F2E412CE73 /* CareerDevelopment.swift in Sources */,
 				6FD6D031B73178BF72F7E8E0 /* CareerView.swift in Sources */,
+				6E374587DDFEF7235C4E321D /* CloudKitService.swift in Sources */,
 				0087E09BE6DE82DA0C7836A7 /* ContentView.swift in Sources */,
 				9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */,
 				096991FDFC2FB502D97D36E9 /* DataStore.swift in Sources */,
@@ -336,9 +418,114 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CE5CA8A48D5946C71627C2E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09140FC1FA8313F9C2D9A6CC /* AIInsightsView.swift in Sources */,
+				78286AE444C01ED8B2AF68D3 /* AIService.swift in Sources */,
+				C38153F1D6CF3CA7C3ED6C9B /* ActionItem.swift in Sources */,
+				D21E1FFC31914BB438EF8B20 /* ActionItemsView.swift in Sources */,
+				5125233AA9078CDCB887D08D /* CalendarService.swift in Sources */,
+				A4389EABCAFB1D0B7B9DF062 /* CareerDevelopment.swift in Sources */,
+				FD07075F84C393B9BE275D3F /* CareerView.swift in Sources */,
+				958AB77E9739B7C028750D36 /* CloudKitService.swift in Sources */,
+				3425FE8A99A486BD94A1299C /* ContentView.swift in Sources */,
+				CF5C5B4258A2CC3F158978D2 /* DashboardView.swift in Sources */,
+				F17D2D1D836E057E30B0D54D /* DataStore.swift in Sources */,
+				CF21E0DD62DA8EC05A97E705 /* Feedback.swift in Sources */,
+				8133482FC6D13E1ECFF649EA /* FeedbackView.swift in Sources */,
+				205B5474DE90DB3B4337DE55 /* Goal.swift in Sources */,
+				F8A9A850C82CA48FFE5ECF34 /* GoalsView.swift in Sources */,
+				B3577E7EBE38F886DBCFC109 /* IntegrationService.swift in Sources */,
+				79FE395524C0CBADF5C180C0 /* IntegrationsView.swift in Sources */,
+				348FBA114B2B1BF410E50BDC /* Meeting.swift in Sources */,
+				6C02E2AB51F4D28E7B9F4054 /* MeetingsView.swift in Sources */,
+				7FAF12F66AD08EB83D2A6B99 /* ModernDesign.swift in Sources */,
+				5439EBC17514386AFE0EBBE6 /* NewGoalView.swift in Sources */,
+				3F7FFF84BC120EA4AFB604E8 /* NewMeetingView.swift in Sources */,
+				A67E6632495A29734BA56F77 /* NewPersonView.swift in Sources */,
+				3EF003D0E27BCEB52F31F15D /* OKR.swift in Sources */,
+				B63BE768990B5FE603180C82 /* OKRView.swift in Sources */,
+				1FFBB237EA6207A74D9E9773 /* OneOnOneApp.swift in Sources */,
+				255CA071D00663D78FB89F08 /* PeopleView.swift in Sources */,
+				319732CD46513B79C4E94BCF /* Person.swift in Sources */,
+				51676A45F4572A33644AEB98 /* Recording.swift in Sources */,
+				F828014B7935AE066B158FC7 /* RecordingService.swift in Sources */,
+				6B45E4F059B95187B232EB2D /* RecordingsView.swift in Sources */,
+				6AEF37D8426389A5DD20499F /* SearchService.swift in Sources */,
+				5D4D18208D647BE8C4C49D77 /* SearchView.swift in Sources */,
+				480E42D76BA1B2B01BD59870 /* Sentiment.swift in Sources */,
+				5CA9320721DA21D69EA543D9 /* SettingsView.swift in Sources */,
+				4D3259A8683F672E420F2969 /* SyncService.swift in Sources */,
+				569801E69ECF98D072C3F0C5 /* TeamInsightsService.swift in Sources */,
+				77FC3AA704C8BE2CAB57C70A /* TeamInsightsView.swift in Sources */,
+				068739821EB980C8D765845D /* Template.swift in Sources */,
+				575DC1A44C7DB470B62E63E2 /* TemplatesView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		216FB6F09EB085E12D0D7669 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "OneOnOne/OneOnOne-iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OneOnOne;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "OneOnOne needs access to your calendar to create and sync meeting events.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Jordan Koch. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "OneOnOne needs microphone access to record meeting audio.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.OneOnOne;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3DD275FD3DA6DE32DB14D462 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "OneOnOne/OneOnOne-iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OneOnOne;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "OneOnOne needs access to your calendar to create and sync meeting events.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Jordan Koch. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "OneOnOne needs microphone access to record meeting audio.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.OneOnOne;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		4DCC8902A2C8C377EA079A6F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -396,7 +583,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -409,12 +596,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 2.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.9;
@@ -478,7 +665,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -497,13 +684,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 2.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.9;
@@ -518,6 +705,15 @@
 			buildConfigurations = (
 				4DCC8902A2C8C377EA079A6F /* Debug */,
 				D01D35FC201F221BF9328293 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6043CD3E6E3DF370B9B42218 /* Build configuration list for PBXNativeTarget "OneOnOne-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				216FB6F09EB085E12D0D7669 /* Debug */,
+				3DD275FD3DA6DE32DB14D462 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

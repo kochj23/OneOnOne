@@ -210,7 +210,9 @@ struct ActionItemsView: View {
                     .font(.system(size: 13))
                     .foregroundColor(ModernColors.textSecondary)
             }
+            #if os(macOS)
             .toggleStyle(.checkbox)
+            #endif
         }
     }
 

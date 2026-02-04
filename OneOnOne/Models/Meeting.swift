@@ -9,7 +9,15 @@
 
 import Foundation
 
-struct Meeting: Identifiable, Codable {
+struct Meeting: Identifiable, Codable, Hashable {
+    static func == (lhs: Meeting, rhs: Meeting) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     let id: UUID
     var title: String
     var date: Date

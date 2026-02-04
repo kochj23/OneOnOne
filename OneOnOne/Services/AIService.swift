@@ -10,7 +10,8 @@
 
 import Foundation
 
-/// AI-powered insights and suggestions service
+#if os(macOS)
+/// AI-powered insights and suggestions service (macOS only - requires Python/MLX)
 actor AIService {
     static let shared = AIService()
 
@@ -428,3 +429,4 @@ enum AIServiceError: LocalizedError {
         }
     }
 }
+#endif  // os(macOS)

@@ -8,6 +8,8 @@
 //
 
 import Foundation
+
+#if os(macOS)
 import AVFoundation
 
 @MainActor
@@ -303,3 +305,4 @@ enum RecordingError: LocalizedError {
         }
     }
 }
+#endif  // os(macOS)

@@ -154,7 +154,9 @@ struct NewMeetingView: View {
                     formSection(title: "Recurring") {
                         HStack {
                             Toggle("Make this a recurring meeting", isOn: $isRecurring)
+                                #if os(macOS)
                                 .toggleStyle(.checkbox)
+                                #endif
                                 .foregroundColor(ModernColors.textSecondary)
 
                             if isRecurring {

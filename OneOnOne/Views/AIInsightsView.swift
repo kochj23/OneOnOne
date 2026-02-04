@@ -9,6 +9,7 @@
 
 import SwiftUI
 
+#if os(macOS)
 struct AIInsightsView: View {
     @EnvironmentObject var dataStore: DataStore
     @State private var weeklyRecap: String?
@@ -669,3 +670,4 @@ struct AIInsightsView: View {
     AIInsightsView()
         .environmentObject(DataStore.shared)
 }
+#endif  // os(macOS)

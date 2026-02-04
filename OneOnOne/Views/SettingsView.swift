@@ -10,7 +10,9 @@
 import SwiftUI
 
 struct SettingsView: View {
+    #if !os(tvOS)
     @EnvironmentObject var calendarService: CalendarService
+    #endif
     @EnvironmentObject var syncService: SyncService
     @State private var aiModelPath = "~/.mlx/models/Llama-3.2-3B-Instruct-4bit"
     @State private var autoBackupEnabled = true
@@ -83,6 +85,7 @@ struct SettingsView: View {
 
     // MARK: - Calendar Settings
 
+    #if !os(tvOS)
     private var calendarSettings: some View {
         Form {
             Section("Calendar Access") {
@@ -115,6 +118,17 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .padding()
     }
+    #else
+    private var calendarSettings: some View {
+        VStack {
+            Text("Calendar")
+                .font(.title2)
+            Text("Calendar integration is not available on tvOS")
+                .foregroundColor(.secondary)
+        }
+        .padding()
+    }
+    #endif
 
     // MARK: - AI Settings
 
