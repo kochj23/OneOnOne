@@ -21,6 +21,20 @@
                ReferencedContainer = "container:OneOnOne.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2FCA63BF692FB54E520FEA3F"
+               BuildableName = "OneOnOneWidget-macOS.appex"
+               BlueprintName = "OneOnOneWidget-macOS"
+               ReferencedContainer = "container:OneOnOne.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

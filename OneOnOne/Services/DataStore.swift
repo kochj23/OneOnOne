@@ -171,6 +171,9 @@ class DataStore: ObservableObject {
 
         lastSyncDate = Date()
         print("DataStore saved")
+
+        // Sync data to widget
+        WidgetSyncService.shared.syncToWidget()
     }
 
     // MARK: - Person Operations
