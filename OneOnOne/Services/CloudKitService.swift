@@ -639,16 +639,21 @@ extension Goal {
 
         record["title"] = title as CKRecordValue
         record["description"] = description as CKRecordValue?
-        record["personId"] = personId.uuidString as CKRecordValue
+        record["personId"] = personId?.uuidString as CKRecordValue?
         record["category"] = category.rawValue as CKRecordValue
         record["status"] = status.rawValue as CKRecordValue
-        record["priority"] = priority.rawValue as CKRecordValue
-        record["dueDate"] = dueDate as CKRecordValue?
         record["progress"] = progress as CKRecordValue
+        record["targetDate"] = targetDate as CKRecordValue?
         record["relatedMeetingIds"] = relatedMeetingIds.map { $0.uuidString } as CKRecordValue
-        record["milestones"] = milestones as CKRecordValue
+        record["tags"] = tags as CKRecordValue
         record["createdAt"] = createdAt as CKRecordValue
         record["updatedAt"] = updatedAt as CKRecordValue
+
+        // Encode milestones as JSON
+        if let milestonesData = try? JSONEncoder().encode(milestones),
+           let milestonesString = String(data: milestonesData, encoding: .utf8) {
+            record["milestonesJson"] = milestonesString as CKRecordValue
+        }
 
         return record
     }
@@ -656,8 +661,6 @@ extension Goal {
     init?(from record: CKRecord) {
         guard record.recordType == "Goal",
               let title = record["title"] as? String,
-              let personIdString = record["personId"] as? String,
-              let personId = UUID(uuidString: personIdString),
               let createdAt = record["createdAt"] as? Date,
               let updatedAt = record["updatedAt"] as? Date,
               let id = UUID(uuidString: record.recordID.recordName) else {
@@ -667,16 +670,24 @@ extension Goal {
         self.id = id
         self.title = title
         self.description = record["description"] as? String
-        self.personId = personId
-        self.category = GoalCategory(rawValue: record["category"] as? String ?? "") ?? .professional
+        self.personId = (record["personId"] as? String).flatMap { UUID(uuidString: $0) }
+        self.category = GoalCategory(rawValue: record["category"] as? String ?? "") ?? .development
         self.status = GoalStatus(rawValue: record["status"] as? String ?? "") ?? .notStarted
-        self.priority = GoalPriority(rawValue: record["priority"] as? String ?? "") ?? .medium
-        self.dueDate = record["dueDate"] as? Date
         self.progress = record["progress"] as? Double ?? 0
+        self.targetDate = record["targetDate"] as? Date
         self.relatedMeetingIds = (record["relatedMeetingIds"] as? [String])?.compactMap { UUID(uuidString: $0) } ?? []
-        self.milestones = record["milestones"] as? [String] ?? []
+        self.tags = record["tags"] as? [String] ?? []
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+
+        // Decode milestones from JSON
+        if let milestonesString = record["milestonesJson"] as? String,
+           let milestonesData = milestonesString.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([Milestone].self, from: milestonesData) {
+            self.milestones = decoded
+        } else {
+            self.milestones = []
+        }
     }
 }
 
@@ -687,11 +698,18 @@ extension MeetingTemplate {
 
         record["name"] = name as CKRecordValue
         record["templateDescription"] = description as CKRecordValue?
-        record["agendaItems"] = agendaItems as CKRecordValue
+        record["meetingType"] = meetingType.rawValue as CKRecordValue
         record["defaultDuration"] = defaultDuration as CKRecordValue
-        record["category"] = category as CKRecordValue
-        record["icon"] = icon as CKRecordValue
+        record["suggestedQuestions"] = suggestedQuestions as CKRecordValue
         record["isBuiltIn"] = (isBuiltIn ? 1 : 0) as CKRecordValue
+        record["createdAt"] = createdAt as CKRecordValue
+        record["updatedAt"] = updatedAt as CKRecordValue
+
+        // Encode agendaItems as JSON
+        if let agendaData = try? JSONEncoder().encode(agendaItems),
+           let agendaString = String(data: agendaData, encoding: .utf8) {
+            record["agendaItemsJson"] = agendaString as CKRecordValue
+        }
 
         return record
     }
@@ -706,11 +724,21 @@ extension MeetingTemplate {
         self.id = id
         self.name = name
         self.description = record["templateDescription"] as? String
-        self.agendaItems = record["agendaItems"] as? [String] ?? []
+        self.meetingType = MeetingType(rawValue: record["meetingType"] as? String ?? "") ?? .oneOnOne
         self.defaultDuration = record["defaultDuration"] as? TimeInterval ?? 3600
-        self.category = record["category"] as? String ?? "Custom"
-        self.icon = record["icon"] as? String ?? "doc.text"
+        self.suggestedQuestions = record["suggestedQuestions"] as? [String] ?? []
         self.isBuiltIn = (record["isBuiltIn"] as? Int ?? 0) == 1
+        self.createdAt = record["createdAt"] as? Date ?? Date()
+        self.updatedAt = record["updatedAt"] as? Date ?? Date()
+
+        // Decode agendaItems from JSON
+        if let agendaString = record["agendaItemsJson"] as? String,
+           let agendaData = agendaString.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([AgendaItem].self, from: agendaData) {
+            self.agendaItems = decoded
+        } else {
+            self.agendaItems = []
+        }
     }
 }
 
@@ -722,9 +750,12 @@ extension Feedback {
         record["personId"] = personId.uuidString as CKRecordValue
         record["meetingId"] = meetingId?.uuidString as CKRecordValue?
         record["feedbackType"] = type.rawValue as CKRecordValue
+        record["direction"] = direction.rawValue as CKRecordValue
         record["content"] = content as CKRecordValue
-        record["isPrivate"] = (isPrivate ? 1 : 0) as CKRecordValue
+        record["context"] = context as CKRecordValue?
+        record["tags"] = tags as CKRecordValue
         record["date"] = date as CKRecordValue
+        record["createdAt"] = createdAt as CKRecordValue
 
         return record
     }
@@ -742,10 +773,13 @@ extension Feedback {
         self.id = id
         self.personId = personId
         self.meetingId = (record["meetingId"] as? String).flatMap { UUID(uuidString: $0) }
-        self.type = FeedbackType(rawValue: record["feedbackType"] as? String ?? "") ?? .general
+        self.type = FeedbackType(rawValue: record["feedbackType"] as? String ?? "") ?? .praise
+        self.direction = FeedbackDirection(rawValue: record["direction"] as? String ?? "") ?? .given
         self.content = content
-        self.isPrivate = (record["isPrivate"] as? Int ?? 0) == 1
+        self.context = record["context"] as? String
+        self.tags = record["tags"] as? [String] ?? []
         self.date = date
+        self.createdAt = record["createdAt"] as? Date ?? Date()
     }
 }
 
@@ -756,14 +790,25 @@ extension CareerProfile {
 
         record["personId"] = personId.uuidString as CKRecordValue
         record["currentRole"] = currentRole as CKRecordValue?
-        record["careerGoal"] = careerGoal as CKRecordValue?
+        record["targetRole"] = targetRole as CKRecordValue?
+        record["careerGoals"] = careerGoals as CKRecordValue?
         record["strengths"] = strengths as CKRecordValue
         record["areasForGrowth"] = areasForGrowth as CKRecordValue
-        record["skills"] = skills as CKRecordValue
-        record["certifications"] = certifications as CKRecordValue
-        record["notes"] = notes as CKRecordValue?
+        record["promotionReadiness"] = promotionReadiness.rawValue as CKRecordValue
+        record["lastReviewDate"] = lastReviewDate as CKRecordValue?
+        record["nextReviewDate"] = nextReviewDate as CKRecordValue?
         record["createdAt"] = createdAt as CKRecordValue
         record["updatedAt"] = updatedAt as CKRecordValue
+
+        // Encode skills and trainings as JSON
+        if let skillsData = try? JSONEncoder().encode(skills),
+           let skillsString = String(data: skillsData, encoding: .utf8) {
+            record["skillsJson"] = skillsString as CKRecordValue
+        }
+        if let trainingsData = try? JSONEncoder().encode(trainings),
+           let trainingsString = String(data: trainingsData, encoding: .utf8) {
+            record["trainingsJson"] = trainingsString as CKRecordValue
+        }
 
         return record
     }
@@ -771,23 +816,40 @@ extension CareerProfile {
     init?(from record: CKRecord) {
         guard record.recordType == "CareerProfile",
               let personIdString = record["personId"] as? String,
-              let _ = UUID(uuidString: personIdString),
+              let personId = UUID(uuidString: personIdString),
               let createdAt = record["createdAt"] as? Date,
               let updatedAt = record["updatedAt"] as? Date else {
             return nil
         }
 
         self.id = UUID()
-        self.personId = UUID(uuidString: personIdString)!
+        self.personId = personId
         self.currentRole = record["currentRole"] as? String
-        self.careerGoal = record["careerGoal"] as? String
+        self.targetRole = record["targetRole"] as? String
+        self.careerGoals = record["careerGoals"] as? String
         self.strengths = record["strengths"] as? [String] ?? []
         self.areasForGrowth = record["areasForGrowth"] as? [String] ?? []
-        self.skills = record["skills"] as? [String] ?? []
-        self.certifications = record["certifications"] as? [String] ?? []
-        self.notes = record["notes"] as? String
+        self.promotionReadiness = PromotionReadiness(rawValue: record["promotionReadiness"] as? String ?? "") ?? .notReady
+        self.lastReviewDate = record["lastReviewDate"] as? Date
+        self.nextReviewDate = record["nextReviewDate"] as? Date
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+
+        // Decode skills and trainings from JSON
+        if let skillsString = record["skillsJson"] as? String,
+           let skillsData = skillsString.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([Skill].self, from: skillsData) {
+            self.skills = decoded
+        } else {
+            self.skills = []
+        }
+        if let trainingsString = record["trainingsJson"] as? String,
+           let trainingsData = trainingsString.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([Training].self, from: trainingsData) {
+            self.trainings = decoded
+        } else {
+            self.trainings = []
+        }
     }
 }
 
@@ -799,24 +861,35 @@ extension SentimentEntry {
         record["personId"] = personId.uuidString as CKRecordValue
         record["meetingId"] = meetingId?.uuidString as CKRecordValue?
         record["sentiment"] = sentiment.rawValue as CKRecordValue
+        record["energyLevel"] = energyLevel.rawValue as CKRecordValue
+        record["engagementLevel"] = engagementLevel.rawValue as CKRecordValue
+        record["stressIndicators"] = stressIndicators.map { $0.rawValue } as CKRecordValue
         record["notes"] = notes as CKRecordValue?
         record["date"] = date as CKRecordValue
+        record["createdAt"] = createdAt as CKRecordValue
 
         return record
     }
 
     init?(from record: CKRecord) {
         guard record.recordType == "SentimentEntry",
+              let personIdString = record["personId"] as? String,
+              let personId = UUID(uuidString: personIdString),
               let date = record["date"] as? Date,
               let id = UUID(uuidString: record.recordID.recordName) else {
             return nil
         }
 
         self.id = id
+        self.personId = personId
         self.meetingId = (record["meetingId"] as? String).flatMap { UUID(uuidString: $0) }
-        self.sentiment = Sentiment(rawValue: record["sentiment"] as? Int ?? 3) ?? .neutral
+        self.sentiment = SentimentLevel(rawValue: record["sentiment"] as? Int ?? 3) ?? .neutral
+        self.energyLevel = EnergyLevel(rawValue: record["energyLevel"] as? Int ?? 3) ?? .moderate
+        self.engagementLevel = EngagementLevel(rawValue: record["engagementLevel"] as? Int ?? 4) ?? .engaged
+        self.stressIndicators = (record["stressIndicators"] as? [String])?.compactMap { StressIndicator(rawValue: $0) } ?? []
         self.notes = record["notes"] as? String
         self.date = date
+        self.createdAt = record["createdAt"] as? Date ?? Date()
     }
 }
 
@@ -827,10 +900,13 @@ extension Objective {
 
         record["title"] = title as CKRecordValue
         record["objectiveDescription"] = description as CKRecordValue?
+        record["level"] = level.rawValue as CKRecordValue
+        record["parentId"] = parentId?.uuidString as CKRecordValue?
         record["ownerId"] = ownerId?.uuidString as CKRecordValue?
         record["quarter"] = quarter as CKRecordValue
         record["status"] = status.rawValue as CKRecordValue
-        record["progress"] = progress as CKRecordValue
+        record["tags"] = tags as CKRecordValue
+        record["linkedGoalIds"] = linkedGoalIds.map { $0.uuidString } as CKRecordValue
         record["createdAt"] = createdAt as CKRecordValue
         record["updatedAt"] = updatedAt as CKRecordValue
 
@@ -856,10 +932,13 @@ extension Objective {
         self.id = id
         self.title = title
         self.description = record["objectiveDescription"] as? String
+        self.level = OKRLevel(rawValue: record["level"] as? String ?? "") ?? .individual
+        self.parentId = (record["parentId"] as? String).flatMap { UUID(uuidString: $0) }
         self.ownerId = (record["ownerId"] as? String).flatMap { UUID(uuidString: $0) }
         self.quarter = quarter
-        self.status = OKRStatus(rawValue: record["status"] as? String ?? "") ?? .notStarted
-        self.progress = record["progress"] as? Double ?? 0
+        self.status = OKRStatus(rawValue: record["status"] as? String ?? "") ?? .onTrack
+        self.tags = record["tags"] as? [String] ?? []
+        self.linkedGoalIds = (record["linkedGoalIds"] as? [String])?.compactMap { UUID(uuidString: $0) } ?? []
         self.createdAt = createdAt
         self.updatedAt = updatedAt
 
@@ -880,11 +959,20 @@ extension Recording {
         let record = CKRecord(recordType: "Recording", recordID: recordID)
 
         record["meetingId"] = meetingId.uuidString as CKRecordValue
-        record["title"] = title as CKRecordValue
+        record["fileName"] = fileName as CKRecordValue
+        record["filePath"] = filePath as CKRecordValue
         record["duration"] = duration as CKRecordValue
-        record["fileSize"] = Int64(fileSize) as CKRecordValue
-        record["transcript"] = transcript as CKRecordValue?
+        record["fileSize"] = fileSize as CKRecordValue
+        record["hasConsent"] = (hasConsent ? 1 : 0) as CKRecordValue
+        record["consentNote"] = consentNote as CKRecordValue?
         record["createdAt"] = createdAt as CKRecordValue
+
+        // Encode transcription as JSON
+        if let transcription = transcription,
+           let transcriptionData = try? JSONEncoder().encode(transcription),
+           let transcriptionString = String(data: transcriptionData, encoding: .utf8) {
+            record["transcriptionJson"] = transcriptionString as CKRecordValue
+        }
 
         return record
     }
@@ -893,7 +981,8 @@ extension Recording {
         guard record.recordType == "Recording",
               let meetingIdString = record["meetingId"] as? String,
               let meetingId = UUID(uuidString: meetingIdString),
-              let title = record["title"] as? String,
+              let fileName = record["fileName"] as? String,
+              let filePath = record["filePath"] as? String,
               let duration = record["duration"] as? TimeInterval,
               let createdAt = record["createdAt"] as? Date,
               let id = UUID(uuidString: record.recordID.recordName) else {
@@ -902,11 +991,21 @@ extension Recording {
 
         self.id = id
         self.meetingId = meetingId
-        self.title = title
+        self.fileName = fileName
+        self.filePath = filePath
         self.duration = duration
-        self.fileSize = Int(record["fileSize"] as? Int64 ?? 0)
-        self.transcript = record["transcript"] as? String
-        self.fileURL = nil // File URL is local only
+        self.fileSize = record["fileSize"] as? Int64 ?? 0
+        self.hasConsent = (record["hasConsent"] as? Int ?? 0) == 1
+        self.consentNote = record["consentNote"] as? String
         self.createdAt = createdAt
+
+        // Decode transcription from JSON
+        if let transcriptionString = record["transcriptionJson"] as? String,
+           let transcriptionData = transcriptionString.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode(Transcription.self, from: transcriptionData) {
+            self.transcription = decoded
+        } else {
+            self.transcription = nil
+        }
     }
 }
