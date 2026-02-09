@@ -93,6 +93,8 @@ struct OneOnOneApp: App {
 
         Settings {
             SettingsView()
+                .environmentObject(calendarService)
+                .environmentObject(syncService)
         }
 
         #elseif os(iOS)
