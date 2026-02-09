@@ -14,7 +14,6 @@ struct SettingsView: View {
     @EnvironmentObject var calendarService: CalendarService
     #endif
     @EnvironmentObject var syncService: SyncService
-    @State private var aiModelPath = "~/.mlx/models/Llama-3.2-3B-Instruct-4bit"
     @State private var autoBackupEnabled = true
     @State private var backupFrequency = "Daily"
 
@@ -133,24 +132,8 @@ struct SettingsView: View {
     // MARK: - AI Settings
 
     private var aiSettings: some View {
-        Form {
-            Section("Model") {
-                TextField("Model Path", text: $aiModelPath)
-                    .textFieldStyle(.roundedBorder)
-
-                Text("Supported models: Llama 3.2, Qwen 2.5, Mistral, Phi-3.5")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Section("About") {
-                Text("AI features use local MLX models for privacy-focused, offline inference.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .formStyle(.grouped)
-        .padding()
+        AISettingsView()
+            .padding()
     }
 
     // MARK: - Backup Settings

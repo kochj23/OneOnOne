@@ -96,6 +96,15 @@ AI-assisted app for managing 1:1 and team meetings. Available on macOS and iOS w
 - Whisper-based transcription with timestamps
 - Speaker diarization support
 
+### Widget (macOS and iOS)
+- **Home Screen Widget** with Small, Medium, and Large sizes
+- View upcoming meetings at a glance
+- Track overdue action items count
+- See people you need to meet with soon
+- Quick access to the app with meeting context
+- Automatic sync when app data changes
+- Configurable display options
+
 ## Platform Feature Comparison
 
 | Feature | macOS | iOS |
@@ -109,6 +118,7 @@ AI-assisted app for managing 1:1 and team meetings. Available on macOS and iOS w
 | Team Insights | ✅ | ✅ |
 | iCloud Sync | ✅ | ✅ |
 | Calendar Integration | ✅ | ✅ |
+| Home Screen Widget | ✅ | ✅ |
 | AI Insights | ✅ | ❌ |
 | Voice Recording | ✅ | ❌ |
 | Transcription | ✅ | ❌ |
@@ -207,6 +217,12 @@ xcodebuild -scheme OneOnOne-iOS -configuration Release -destination 'generic/pla
 ```
 
 ## Version History
+
+### v2.1.0
+- Added WidgetKit widget extension (Small, Medium, Large sizes)
+- Widget shows upcoming meetings, overdue action items, and people to meet
+- App Group support for widget data sharing
+- Automatic widget refresh when app data changes
 
 ### v2.0.0
 - Added iOS support

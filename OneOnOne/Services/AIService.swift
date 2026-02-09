@@ -3,135 +3,180 @@
 //  OneOnOne
 //
 //  AI service for generating insights, summaries, and reminders
-//  Uses local MLX models via Python daemon
+//  Supports multiple backends: Ollama, OpenWebUI, MLX Toolkit, TinyChat
+//
 //  Created by Jordan Koch on 2026-02-02.
 //  Copyright © 2026 Jordan Koch. All rights reserved.
 //
+//  THIRD-PARTY INTEGRATIONS:
+//  - TinyChat by Jason Cox (https://github.com/jasonacox/tinychat)
+//  - OpenWebUI Community (https://github.com/open-webui/open-webui)
+//
 
 import Foundation
+import SwiftUI
 
-#if os(macOS)
-/// AI-powered insights and suggestions service (macOS only - requires Python/MLX)
-actor AIService {
+/// AI-powered insights and suggestions service with multi-backend support
+@MainActor
+class AIService: ObservableObject {
     static let shared = AIService()
 
-    // MARK: - Properties
+    // MARK: - Published Properties
 
+    @Published var isProcessing = false
+    @Published var selectedProvider: AIProvider = .ollama
+    @Published var lastError: String?
+
+    // Backend availability
+    @Published var isOllamaAvailable = false
+    @Published var isOpenWebUIAvailable = false
+    @Published var isMLXAvailable = false
+    @Published var isTinyChatAvailable = false
+
+    // MARK: - Configuration
+
+    var ollamaEndpoint = "http://localhost:11434"
+    var ollamaModel = "llama3.2"
+    var openWebUIEndpoint = "http://localhost:8080"
+    var openWebUIModel = "llama3.2"
+    var mlxEndpoint = "http://localhost:8800"
+    var mlxModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
+    var tinyChatEndpoint = "http://localhost:5000"
+
+    // MARK: - MLX Daemon (for local MLX inference)
+
+    #if os(macOS)
     private var daemonProcess: Process?
     private var inputPipe: Pipe?
     private var outputPipe: Pipe?
     private var isDaemonRunning = false
-    private var loadedModelPath: String?
+    #endif
 
-    // Default model path (can be configured)
-    private let defaultModelPath = "~/.mlx/models/Llama-3.2-3B-Instruct-4bit"
+    // MARK: - Initialization
 
-    private init() {}
-
-    // MARK: - Daemon Management
-
-    /// Starts the AI daemon process
-    func startDaemon() async throws {
-        guard !isDaemonRunning else { return }
-
-        // Get daemon script path
-        guard let scriptPath = getDaemonScriptPath() else {
-            throw AIServiceError.daemonNotFound
+    private init() {
+        loadConfiguration()
+        Task {
+            await checkBackendAvailability()
         }
-
-        let process = Process()
-        let inputPipe = Pipe()
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-
-        // Use Xcode's Python
-        let pythonPath = "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9"
-
-        guard FileManager.default.fileExists(atPath: pythonPath) else {
-            throw AIServiceError.pythonNotFound
-        }
-
-        process.executableURL = URL(fileURLWithPath: pythonPath)
-        process.arguments = [scriptPath]
-        process.standardInput = inputPipe
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-
-        // Set PYTHONPATH for user packages
-        var env = ProcessInfo.processInfo.environment
-        let userSitePackages = "/Users/\(NSUserName())/Library/Python/3.9/lib/python/site-packages"
-        env["PYTHONPATH"] = userSitePackages
-        process.environment = env
-        process.currentDirectoryURL = FileManager.default.homeDirectoryForCurrentUser
-
-        self.daemonProcess = process
-        self.inputPipe = inputPipe
-        self.outputPipe = outputPipe
-
-        try process.run()
-
-        // Wait for ready signal
-        let response = try await readResponse()
-        guard response["type"] as? String == "ready" else {
-            throw AIServiceError.daemonStartFailed
-        }
-
-        isDaemonRunning = true
-        print("AI daemon started successfully")
     }
 
-    /// Stops the AI daemon
-    func stopDaemon() async {
-        guard let process = daemonProcess, process.isRunning else { return }
+    // MARK: - Backend Availability
 
-        // Send shutdown command
-        try? await sendCommand(["type": "shutdown"])
-
-        try? await Task.sleep(nanoseconds: 500_000_000)
-
-        if process.isRunning {
-            process.terminate()
+    func checkBackendAvailability() async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await self.checkOllama() }
+            group.addTask { await self.checkOpenWebUI() }
+            group.addTask { await self.checkMLX() }
+            group.addTask { await self.checkTinyChat() }
         }
 
-        daemonProcess = nil
-        inputPipe = nil
-        outputPipe = nil
-        isDaemonRunning = false
-        loadedModelPath = nil
+        // Auto-select first available provider
+        if !isProviderAvailable(selectedProvider) {
+            if isOllamaAvailable {
+                selectedProvider = .ollama
+            } else if isOpenWebUIAvailable {
+                selectedProvider = .openWebUI
+            } else if isMLXAvailable {
+                selectedProvider = .mlxToolkit
+            } else if isTinyChatAvailable {
+                selectedProvider = .tinyChat
+            }
+        }
     }
 
-    /// Loads an AI model
-    func loadModel(path: String? = nil) async throws {
-        let modelPath = path ?? defaultModelPath
-        let expandedPath = (modelPath as NSString).expandingTildeInPath
+    func isProviderAvailable(_ provider: AIProvider) -> Bool {
+        switch provider {
+        case .ollama: return isOllamaAvailable
+        case .openWebUI: return isOpenWebUIAvailable
+        case .mlxToolkit: return isMLXAvailable
+        case .tinyChat: return isTinyChatAvailable
+        }
+    }
 
-        // Check if already loaded
-        if loadedModelPath == expandedPath {
+    private func checkOllama() async {
+        guard let url = URL(string: "\(ollamaEndpoint)/api/tags") else {
+            isOllamaAvailable = false
             return
         }
 
-        if !isDaemonRunning {
-            try await startDaemon()
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                isOllamaAvailable = true
+            } else {
+                isOllamaAvailable = false
+            }
+        } catch {
+            isOllamaAvailable = false
+        }
+    }
+
+    private func checkOpenWebUI() async {
+        guard let url = URL(string: "\(openWebUIEndpoint)/api/models") else {
+            isOpenWebUIAvailable = false
+            return
         }
 
-        try await sendCommand([
-            "type": "load_model",
-            "model_path": expandedPath
-        ])
-
-        // Wait for load response
-        while true {
-            let response = try await readResponse()
-            if response["type"] as? String == "debug" {
-                continue
-            }
-            if response["success"] as? Bool == true {
-                loadedModelPath = expandedPath
-                print("AI model loaded: \(expandedPath)")
-                return
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                isOpenWebUIAvailable = true
             } else {
-                throw AIServiceError.modelLoadFailed(response["error"] as? String ?? "Unknown error")
+                isOpenWebUIAvailable = false
             }
+        } catch {
+            isOpenWebUIAvailable = false
+        }
+    }
+
+    private func checkMLX() async {
+        // Check if MLX HTTP server is running
+        guard let url = URL(string: "\(mlxEndpoint)/v1/models") else {
+            isMLXAvailable = false
+            return
+        }
+
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                isMLXAvailable = true
+            } else {
+                isMLXAvailable = false
+            }
+        } catch {
+            isMLXAvailable = false
+        }
+    }
+
+    private func checkTinyChat() async {
+        // TinyChat uses OpenAI-compatible API
+        guard let url = URL(string: "\(tinyChatEndpoint)/v1/models") else {
+            isTinyChatAvailable = false
+            return
+        }
+
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                isTinyChatAvailable = true
+            } else {
+                isTinyChatAvailable = false
+            }
+        } catch {
+            isTinyChatAvailable = false
         }
     }
 
@@ -139,8 +184,6 @@ actor AIService {
 
     /// Generates a meeting summary from notes
     func generateMeetingSummary(notes: String, attendees: [String]) async throws -> String {
-        try await loadModel()
-
         let prompt = """
         You are a helpful assistant that summarizes meeting notes concisely.
 
@@ -159,8 +202,6 @@ actor AIService {
 
     /// Extracts action items from meeting notes
     func extractActionItems(from notes: String) async throws -> [String] {
-        try await loadModel()
-
         let prompt = """
         You are a helpful assistant that identifies action items from meeting notes.
 
@@ -174,7 +215,6 @@ actor AIService {
 
         let response = try await generate(prompt: prompt)
 
-        // Parse action items from response
         return response
             .components(separatedBy: "\n")
             .filter { $0.hasPrefix("- ") || $0.hasPrefix("* ") }
@@ -183,8 +223,6 @@ actor AIService {
 
     /// Generates conversation starters based on history
     func suggestConversationTopics(for person: Person, recentMeetings: [Meeting]) async throws -> [String] {
-        try await loadModel()
-
         let meetingContext = recentMeetings.prefix(3).map { meeting in
             "- \(meeting.date.formatted(date: .abbreviated, time: .omitted)): \(meeting.title)"
         }.joined(separator: "\n")
@@ -219,8 +257,6 @@ actor AIService {
 
     /// Generates a weekly recap of meetings and action items
     func generateWeeklyRecap(meetings: [Meeting], openActionItems: [ActionItem]) async throws -> String {
-        try await loadModel()
-
         let meetingList = meetings.map { meeting in
             "- \(meeting.date.formatted(date: .abbreviated, time: .shortened)): \(meeting.title) (\(meeting.meetingType.rawValue))"
         }.joined(separator: "\n")
@@ -252,8 +288,6 @@ actor AIService {
 
     /// Suggests follow-up questions based on meeting notes
     func suggestFollowUps(meetingNotes: String) async throws -> [String] {
-        try await loadModel()
-
         let prompt = """
         You are a helpful assistant identifying follow-up items from meeting notes.
 
@@ -275,8 +309,6 @@ actor AIService {
 
     /// Analyzes goal progress and provides recommendations
     func analyzeGoalProgress(goal: Goal, relatedMeetings: [Meeting]) async throws -> String {
-        try await loadModel()
-
         let milestoneStatus = goal.milestones.map { milestone in
             "- \(milestone.title): \(milestone.isCompleted ? "Complete" : "Pending")"
         }.joined(separator: "\n")
@@ -307,126 +339,428 @@ actor AIService {
         return try await generate(prompt: prompt)
     }
 
-    // MARK: - Private Methods
+    // MARK: - Core Generation
 
     private func generate(prompt: String, maxTokens: Int = 1024) async throws -> String {
-        try await sendCommand([
-            "type": "generate",
+        isProcessing = true
+        lastError = nil
+
+        defer { isProcessing = false }
+
+        // Check if selected provider is available
+        if !isProviderAvailable(selectedProvider) {
+            // Try to find an available provider
+            await checkBackendAvailability()
+
+            if !isProviderAvailable(selectedProvider) {
+                throw AIServiceError.noBackendAvailable
+            }
+        }
+
+        do {
+            switch selectedProvider {
+            case .ollama:
+                return try await callOllama(prompt: prompt, maxTokens: maxTokens)
+            case .openWebUI:
+                return try await callOpenWebUI(prompt: prompt, maxTokens: maxTokens)
+            case .mlxToolkit:
+                return try await callMLX(prompt: prompt, maxTokens: maxTokens)
+            case .tinyChat:
+                return try await callTinyChat(prompt: prompt, maxTokens: maxTokens)
+            }
+        } catch {
+            lastError = error.localizedDescription
+            throw error
+        }
+    }
+
+    // MARK: - Ollama
+
+    private func callOllama(prompt: String, maxTokens: Int) async throws -> String {
+        guard let url = URL(string: "\(ollamaEndpoint)/api/generate") else {
+            throw AIServiceError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 120
+
+        let body: [String: Any] = [
+            "model": ollamaModel,
             "prompt": prompt,
-            "max_tokens": maxTokens,
-            "temperature": 0.7
-        ])
+            "stream": false,
+            "options": [
+                "num_predict": maxTokens,
+                "temperature": 0.7
+            ]
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        var fullResponse = ""
+        let (data, _) = try await URLSession.shared.data(for: request)
 
-        while true {
-            let response = try await readResponse()
-            let type = response["type"] as? String
-
-            if type == "token", let token = response["token"] as? String {
-                fullResponse += token
-            } else if type == "complete" || type == "done" {
-                break
-            } else if let error = response["error"] as? String {
-                throw AIServiceError.generationFailed(error)
-            }
-        }
-
-        return fullResponse.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private func sendCommand(_ command: [String: Any]) async throws {
-        guard let inputPipe = inputPipe else {
-            throw AIServiceError.daemonNotRunning
-        }
-
-        let jsonData = try JSONSerialization.data(withJSONObject: command)
-        var commandString = String(data: jsonData, encoding: .utf8) ?? ""
-        commandString += "\n"
-
-        guard let data = commandString.data(using: .utf8) else {
-            throw AIServiceError.encodingFailed
-        }
-
-        inputPipe.fileHandleForWriting.write(data)
-    }
-
-    private func readResponse() async throws -> [String: Any] {
-        guard let outputPipe = outputPipe else {
-            throw AIServiceError.daemonNotRunning
-        }
-
-        let handle = outputPipe.fileHandleForReading
-        var line = Data()
-
-        while true {
-            let byte = handle.readData(ofLength: 1)
-            if byte.isEmpty {
-                throw AIServiceError.daemonClosed
-            }
-            if byte.first == UInt8(ascii: "\n") {
-                break
-            }
-            line.append(byte)
-        }
-
-        guard let json = try JSONSerialization.jsonObject(with: line) as? [String: Any] else {
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let response = json["response"] as? String else {
             throw AIServiceError.invalidResponse
         }
 
-        return json
+        return response.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private func getDaemonScriptPath() -> String? {
-        // Try bundle first
-        if let bundlePath = Bundle.main.path(forResource: "ai_daemon", ofType: "py") {
-            return bundlePath
+    // MARK: - OpenWebUI
+
+    private func callOpenWebUI(prompt: String, maxTokens: Int) async throws -> String {
+        guard let url = URL(string: "\(openWebUIEndpoint)/api/chat/completions") else {
+            throw AIServiceError.invalidURL
         }
 
-        // Fall back to development path
-        let devPath = "/Volumes/Data/xcode/OneOnOne/Python/ai_daemon.py"
-        if FileManager.default.fileExists(atPath: devPath) {
-            return devPath
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 120
+
+        let messages: [[String: String]] = [
+            ["role": "system", "content": "You are a helpful assistant for managing 1:1 meetings and team relationships."],
+            ["role": "user", "content": prompt]
+        ]
+
+        let body: [String: Any] = [
+            "model": openWebUIModel,
+            "messages": messages,
+            "max_tokens": maxTokens,
+            "temperature": 0.7,
+            "stream": false
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        struct OpenWebUIResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable {
+                    let content: String
+                }
+                let message: Message
+            }
+            let choices: [Choice]
         }
 
-        return nil
+        let response = try JSONDecoder().decode(OpenWebUIResponse.self, from: data)
+        return response.choices.first?.message.content.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    // MARK: - MLX Toolkit
+
+    private func callMLX(prompt: String, maxTokens: Int) async throws -> String {
+        // MLX Toolkit exposes an OpenAI-compatible API
+        guard let url = URL(string: "\(mlxEndpoint)/v1/chat/completions") else {
+            throw AIServiceError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 120
+
+        let messages: [[String: String]] = [
+            ["role": "system", "content": "You are a helpful assistant for managing 1:1 meetings and team relationships."],
+            ["role": "user", "content": prompt]
+        ]
+
+        let body: [String: Any] = [
+            "model": mlxModel,
+            "messages": messages,
+            "max_tokens": maxTokens,
+            "temperature": 0.7,
+            "stream": false
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        struct MLXResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable {
+                    let content: String
+                }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+
+        let response = try JSONDecoder().decode(MLXResponse.self, from: data)
+        return response.choices.first?.message.content.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    // MARK: - TinyChat
+    // TinyChat by Jason Cox: https://github.com/jasonacox/tinychat
+
+    private func callTinyChat(prompt: String, maxTokens: Int) async throws -> String {
+        // TinyChat uses OpenAI-compatible API
+        guard let url = URL(string: "\(tinyChatEndpoint)/v1/chat/completions") else {
+            throw AIServiceError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 120
+
+        let messages: [[String: String]] = [
+            ["role": "system", "content": "You are a helpful assistant for managing 1:1 meetings and team relationships."],
+            ["role": "user", "content": prompt]
+        ]
+
+        let body: [String: Any] = [
+            "messages": messages,
+            "max_tokens": maxTokens,
+            "temperature": 0.7,
+            "stream": false
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        struct TinyChatResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable {
+                    let content: String
+                }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+
+        let response = try JSONDecoder().decode(TinyChatResponse.self, from: data)
+        return response.choices.first?.message.content.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    // MARK: - Configuration
+
+    func loadConfiguration() {
+        if let endpoint = UserDefaults.standard.string(forKey: "ollamaEndpoint") {
+            ollamaEndpoint = endpoint
+        }
+        if let model = UserDefaults.standard.string(forKey: "ollamaModel") {
+            ollamaModel = model
+        }
+        if let endpoint = UserDefaults.standard.string(forKey: "openWebUIEndpoint") {
+            openWebUIEndpoint = endpoint
+        }
+        if let model = UserDefaults.standard.string(forKey: "openWebUIModel") {
+            openWebUIModel = model
+        }
+        if let endpoint = UserDefaults.standard.string(forKey: "mlxEndpoint") {
+            mlxEndpoint = endpoint
+        }
+        if let model = UserDefaults.standard.string(forKey: "mlxModel") {
+            mlxModel = model
+        }
+        if let endpoint = UserDefaults.standard.string(forKey: "tinyChatEndpoint") {
+            tinyChatEndpoint = endpoint
+        }
+        if let provider = UserDefaults.standard.string(forKey: "aiProvider"),
+           let aiProvider = AIProvider(rawValue: provider) {
+            selectedProvider = aiProvider
+        }
+    }
+
+    func saveConfiguration() {
+        UserDefaults.standard.set(ollamaEndpoint, forKey: "ollamaEndpoint")
+        UserDefaults.standard.set(ollamaModel, forKey: "ollamaModel")
+        UserDefaults.standard.set(openWebUIEndpoint, forKey: "openWebUIEndpoint")
+        UserDefaults.standard.set(openWebUIModel, forKey: "openWebUIModel")
+        UserDefaults.standard.set(mlxEndpoint, forKey: "mlxEndpoint")
+        UserDefaults.standard.set(mlxModel, forKey: "mlxModel")
+        UserDefaults.standard.set(tinyChatEndpoint, forKey: "tinyChatEndpoint")
+        UserDefaults.standard.set(selectedProvider.rawValue, forKey: "aiProvider")
+    }
+}
+
+// MARK: - AI Provider Enum
+
+enum AIProvider: String, CaseIterable, Identifiable {
+    case ollama = "Ollama"
+    case openWebUI = "OpenWebUI"
+    case mlxToolkit = "MLX Toolkit"
+    case tinyChat = "TinyChat"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .ollama: return "server.rack"
+        case .openWebUI: return "globe"
+        case .mlxToolkit: return "cpu"
+        case .tinyChat: return "bubble.left.and.bubble.right.fill"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .ollama: return "Local Ollama server"
+        case .openWebUI: return "OpenWebUI self-hosted platform"
+        case .mlxToolkit: return "Apple MLX local inference"
+        case .tinyChat: return "TinyChat by Jason Cox"
+        }
+    }
+
+    var attribution: String? {
+        switch self {
+        case .tinyChat: return "https://github.com/jasonacox/tinychat"
+        case .openWebUI: return "https://github.com/open-webui/open-webui"
+        default: return nil
+        }
     }
 }
 
 // MARK: - Errors
 
 enum AIServiceError: LocalizedError {
-    case daemonNotFound
-    case daemonNotRunning
-    case daemonStartFailed
-    case daemonClosed
-    case pythonNotFound
-    case modelLoadFailed(String)
-    case generationFailed(String)
-    case encodingFailed
+    case invalidURL
     case invalidResponse
+    case noBackendAvailable
+    case generationFailed(String)
+    case networkError(Error)
 
     var errorDescription: String? {
         switch self {
-        case .daemonNotFound:
-            return "AI daemon script not found"
-        case .daemonNotRunning:
-            return "AI daemon is not running"
-        case .daemonStartFailed:
-            return "Failed to start AI daemon"
-        case .daemonClosed:
-            return "AI daemon closed unexpectedly"
-        case .pythonNotFound:
-            return "Python 3.9 not found"
-        case .modelLoadFailed(let error):
-            return "Failed to load AI model: \(error)"
-        case .generationFailed(let error):
-            return "AI generation failed: \(error)"
-        case .encodingFailed:
-            return "Failed to encode command"
+        case .invalidURL:
+            return "Invalid API URL"
         case .invalidResponse:
-            return "Invalid response from AI daemon"
+            return "Invalid response from AI service"
+        case .noBackendAvailable:
+            return "No AI backend available. Please configure Ollama, OpenWebUI, MLX Toolkit, or TinyChat."
+        case .generationFailed(let message):
+            return "AI generation failed: \(message)"
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
         }
     }
 }
-#endif  // os(macOS)
+
+// MARK: - Settings View
+
+struct AISettingsView: View {
+    @ObservedObject var aiService = AIService.shared
+    @State private var isChecking = false
+
+    var body: some View {
+        Form {
+            Section(header: Text("AI Provider")) {
+                Picker("Provider", selection: $aiService.selectedProvider) {
+                    ForEach(AIProvider.allCases) { provider in
+                        HStack {
+                            Image(systemName: provider.icon)
+                            Text(provider.rawValue)
+                            if aiService.isProviderAvailable(provider) {
+                                Spacer()
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                            }
+                        }
+                        .tag(provider)
+                    }
+                }
+                .onChange(of: aiService.selectedProvider) { _, _ in
+                    aiService.saveConfiguration()
+                }
+
+                Text(aiService.selectedProvider.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if let attribution = aiService.selectedProvider.attribution {
+                    Link(attribution, destination: URL(string: attribution)!)
+                        .font(.caption2)
+                }
+            }
+
+            Section(header: Text("Backend Status")) {
+                StatusRow(name: "Ollama", icon: "server.rack", isAvailable: aiService.isOllamaAvailable)
+                StatusRow(name: "OpenWebUI", icon: "globe", isAvailable: aiService.isOpenWebUIAvailable)
+                StatusRow(name: "MLX Toolkit", icon: "cpu", isAvailable: aiService.isMLXAvailable)
+                StatusRow(name: "TinyChat", icon: "bubble.left.and.bubble.right.fill", isAvailable: aiService.isTinyChatAvailable)
+
+                Button("Refresh Status") {
+                    isChecking = true
+                    Task {
+                        await aiService.checkBackendAvailability()
+                        isChecking = false
+                    }
+                }
+                .disabled(isChecking)
+            }
+
+            Section(header: Text("Ollama")) {
+                TextField("Endpoint", text: $aiService.ollamaEndpoint)
+                    .textContentType(.URL)
+                TextField("Model", text: $aiService.ollamaModel)
+            }
+            .onChange(of: aiService.ollamaEndpoint) { _, _ in aiService.saveConfiguration() }
+            .onChange(of: aiService.ollamaModel) { _, _ in aiService.saveConfiguration() }
+
+            Section(header: Text("OpenWebUI")) {
+                TextField("Endpoint", text: $aiService.openWebUIEndpoint)
+                    .textContentType(.URL)
+                TextField("Model", text: $aiService.openWebUIModel)
+            }
+            .onChange(of: aiService.openWebUIEndpoint) { _, _ in aiService.saveConfiguration() }
+            .onChange(of: aiService.openWebUIModel) { _, _ in aiService.saveConfiguration() }
+
+            Section(header: Text("MLX Toolkit")) {
+                TextField("Endpoint", text: $aiService.mlxEndpoint)
+                    .textContentType(.URL)
+                TextField("Model", text: $aiService.mlxModel)
+            }
+            .onChange(of: aiService.mlxEndpoint) { _, _ in aiService.saveConfiguration() }
+            .onChange(of: aiService.mlxModel) { _, _ in aiService.saveConfiguration() }
+
+            Section(header: Text("TinyChat")) {
+                TextField("Endpoint", text: $aiService.tinyChatEndpoint)
+                    .textContentType(.URL)
+            }
+            .onChange(of: aiService.tinyChatEndpoint) { _, _ in aiService.saveConfiguration() }
+
+            Section(header: Text("Credits")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Third-Party Integrations:")
+                        .font(.headline)
+
+                    Link("TinyChat by Jason Cox", destination: URL(string: "https://github.com/jasonacox/tinychat")!)
+                    Link("OpenWebUI Community", destination: URL(string: "https://github.com/open-webui/open-webui")!)
+                }
+                .font(.caption)
+            }
+        }
+        #if os(macOS)
+        .formStyle(.grouped)
+        #endif
+    }
+}
+
+private struct StatusRow: View {
+    let name: String
+    let icon: String
+    let isAvailable: Bool
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .frame(width: 20)
+            Text(name)
+            Spacer()
+            if isAvailable {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                Text("Available")
+                    .foregroundColor(.green)
+            } else {
+                Image(systemName: "xmark.circle")
+                    .foregroundColor(.secondary)
+                Text("Unavailable")
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+}
