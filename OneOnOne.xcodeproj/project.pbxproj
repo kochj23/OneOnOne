@@ -36,6 +36,7 @@
 		480E42D76BA1B2B01BD59870 /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
 		4D3259A8683F672E420F2969 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BD04B9BA820D820CB77AF8 /* SyncService.swift */; };
 		5125233AA9078CDCB887D08D /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
+		8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */; };
 		51676A45F4572A33644AEB98 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88504C6CEB2F176EB3543CB5 /* Recording.swift */; };
 		54294A3EA5A1B9B1C7CEF67A /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
 		5439EBC17514386AFE0EBBE6 /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
@@ -72,6 +73,7 @@
 		958AB77E9739B7C028750D36 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */; };
 		9940D3798108B6DC24F207EF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		99924DF63640788E14E4A454 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
+		8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */; };
 		9ABA8E8129D21FB1B90666AC /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F2B45AB8EB30D8C04ECF03 /* WidgetData.swift */; };
 		9CC32C97CB42427E82EE01FF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
@@ -193,6 +195,7 @@
 		B4B6D18D72535ABF30159519 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookCalendarService.swift; sourceTree = "<group>"; };
 		BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerDevelopment.swift; sourceTree = "<group>"; };
 		CC1097332AF67BEE0C63EAFB /* OneOnOneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOnOneWidget.swift; sourceTree = "<group>"; };
 		CF68E714811E26B19A231ABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -225,6 +228,7 @@
 			children = (
 				F58E4850AE87DD8616025749 /* AIService.swift */,
 				BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */,
+				8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */,
 				2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */,
 				1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */,
 				038D00229054740213C66535 /* IntegrationService.swift */,
@@ -534,6 +538,8 @@
 				9940D3798108B6DC24F207EF /* ActionItem.swift in Sources */,
 				FCA301B7D70DF75BE456961A /* ActionItemsView.swift in Sources */,
 				99924DF63640788E14E4A454 /* CalendarService.swift in Sources */,
+				8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */,
+				8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */,
 				A14923D8D92573F2E412CE73 /* CareerDevelopment.swift in Sources */,
 				6FD6D031B73178BF72F7E8E0 /* CareerView.swift in Sources */,
 				6E374587DDFEF7235C4E321D /* CloudKitService.swift in Sources */,
@@ -844,7 +850,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -926,7 +932,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

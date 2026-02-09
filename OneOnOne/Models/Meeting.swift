@@ -25,7 +25,8 @@ struct Meeting: Identifiable, Codable, Hashable {
     var attendees: [UUID] // Person IDs
     var meetingType: MeetingType
     var location: String?
-    var calendarEventId: String? // For calendar integration
+    var calendarEventId: String? // For Apple Calendar integration
+    var outlookEventId: String? // For Outlook calendar integration
 
     // Content
     var agenda: String?
@@ -52,11 +53,14 @@ struct Meeting: Identifiable, Codable, Hashable {
         meetingType: MeetingType = .oneOnOne,
         location: String? = nil,
         calendarEventId: String? = nil,
+        outlookEventId: String? = nil,
         agenda: String? = nil,
         notes: String = "",
+        summary: String? = nil,
         actionItems: [ActionItem] = [],
         decisions: [Decision] = [],
         followUps: [FollowUp] = [],
+        sentiment: MeetingMood? = nil,
         tags: [String] = [],
         mood: MeetingMood? = nil,
         isRecurring: Bool = false,
@@ -70,14 +74,15 @@ struct Meeting: Identifiable, Codable, Hashable {
         self.meetingType = meetingType
         self.location = location
         self.calendarEventId = calendarEventId
+        self.outlookEventId = outlookEventId
         self.agenda = agenda
         self.notes = notes
-        self.summary = nil
+        self.summary = summary
         self.actionItems = actionItems
         self.decisions = decisions
         self.followUps = followUps
         self.tags = tags
-        self.mood = mood
+        self.mood = mood ?? sentiment
         self.isRecurring = isRecurring
         self.recurringId = recurringId
         self.createdAt = Date()
