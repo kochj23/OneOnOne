@@ -1,8 +1,27 @@
 # OneOnOne
 
+**Never lose an action item again.** OneOnOne helps engineering managers run better 1:1s and team meetings with AI-generated summaries, agenda templates, and automatic action item tracking.
+
 ![OneOnOne Screenshot](screenshots/app-screenshot.png)
 
-AI-assisted app for managing 1:1 and team meetings. Available on macOS and iOS with iCloud sync.
+## Screenshots
+
+*Additional screenshots coming soon -- showing the meeting dashboard, AI summary generation, and action item tracker.*
+
+## Download
+
+Download the latest release: [OneOnOne v2.2.0](https://github.com/kochj23/OneOnOne/releases/latest)
+
+Or build from source (see [Building from Source](#building-from-source) below).
+
+## Why OneOnOne?
+
+- **For Engineering Managers** -- Purpose-built for the specific workflow of managing 1:1s and team meetings
+- **AI-Powered Summaries** -- Automatically generate meeting summaries from your notes using local AI (MLX) or cloud providers
+- **Action Item Tracking** -- Never let a follow-up slip through the cracks
+- **Privacy-First** -- All data stored locally. AI runs on your machine with MLX models.
+- **Native macOS & iOS** -- Built with SwiftUI, not a web wrapper. Fast, lightweight, and beautiful.
+- **iCloud Sync** -- Seamlessly sync meetings, action items, and notes across all your Apple devices
 
 ## Platforms
 
