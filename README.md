@@ -1,5 +1,7 @@
 # OneOnOne
 
+![Build](https://github.com/kochj23/OneOnOne/actions/workflows/build.yml/badge.svg)
+
 **Never lose an action item again.** OneOnOne helps engineering managers run better 1:1s and team meetings with AI-generated summaries, agenda templates, and automatic action item tracking.
 
 ![OneOnOne Screenshot](screenshots/app-screenshot.png)
