@@ -174,6 +174,11 @@ class DataStore: ObservableObject {
 
         // Sync data to widget
         WidgetSyncService.shared.syncToWidget()
+
+        // Trigger debounced CloudKit push (skipped when we're applying cloud changes locally)
+        if !CloudKitService.shared.isFetchingFromCloud {
+            CloudKitService.shared.schedulePush()
+        }
     }
 
     // MARK: - Person Operations

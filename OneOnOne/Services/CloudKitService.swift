@@ -32,6 +32,12 @@ class CloudKitService: ObservableObject {
     private let subscriptionID = "OneOnOne-Changes"
     private var isConfigured = false
 
+    /// Set to true while processing fetched cloud records to prevent recursive sync
+    var isFetchingFromCloud = false
+
+    /// Debounced push task — coalesces rapid local saves into a single push
+    private var pushTask: Task<Void, Never>?
+
     // Change token for incremental sync
     private var serverChangeToken: CKServerChangeToken? {
         get {
@@ -146,24 +152,26 @@ class CloudKitService: ObservableObject {
         do {
             try await privateDatabase.save(subscription)
             print("[CloudKit] Subscribed to changes")
-        } catch let error as CKError where error.code == .serverRecordChanged {
-            // Subscription already exists
-            print("[CloudKit] Subscription already exists")
         } catch {
-            print("[CloudKit] Failed to subscribe to changes: \(error)")
+            // Subscription may already exist, which is fine
+            print("[CloudKit] Subscription setup: \(error.localizedDescription)")
         }
     }
 
     // MARK: - Public Sync Operations
 
-    /// Performs a full sync with iCloud
+    /// Performs a full sync with iCloud (fetch then push)
     func sync() async {
         guard isConfigured else {
             syncError = "iCloud sync not configured"
             return
         }
 
-        // Re-check availability
+        guard !isSyncing else {
+            print("[CloudKit] Sync already in progress, skipping")
+            return
+        }
+
         await checkCloudAvailability()
 
         guard isCloudAvailable else {
@@ -204,60 +212,113 @@ class CloudKitService: ObservableObject {
         await sync()
     }
 
-    // MARK: - Fetch Changes
+    /// Schedule a debounced push after local data changes.
+    /// Coalesces rapid saves into a single push after 3 seconds of quiet.
+    func schedulePush() {
+        guard isConfigured, isCloudAvailable, !isFetchingFromCloud else { return }
+
+        pushTask?.cancel()
+        pushTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 second debounce
+            guard !Task.isCancelled else { return }
+            await self?.sync()
+        }
+    }
+
+    /// Called when a remote notification indicates cloud changes are available
+    func handleRemoteNotification() async {
+        guard isConfigured, !isSyncing else { return }
+        print("[CloudKit] Handling remote notification — fetching changes")
+
+        await checkCloudAvailability()
+        guard isCloudAvailable else { return }
+
+        do {
+            try await fetchChanges()
+            lastSyncDate = Date()
+            UserDefaults.standard.set(lastSyncDate, forKey: "lastCloudSyncDate")
+            print("[CloudKit] Remote notification fetch completed")
+        } catch {
+            print("[CloudKit] Remote notification fetch error: \(error)")
+        }
+    }
+
+    // MARK: - Fetch Changes (FIXED: uses continuation to properly await operation)
 
     private func fetchChanges() async throws {
         guard let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
 
-        var changedRecords: [CKRecord] = []
-        var deletedRecordIDs: [CKRecord.ID] = []
+        let result: (records: [CKRecord], deletions: [CKRecord.ID], token: CKServerChangeToken?) = try await withCheckedThrowingContinuation { continuation in
+            var changedRecords: [CKRecord] = []
+            var deletedRecordIDs: [CKRecord.ID] = []
+            var latestToken: CKServerChangeToken?
+            var zoneError: Error?
 
-        // Use CKFetchRecordZoneChangesOperation for incremental sync
-        let options = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
-        options.previousServerChangeToken = serverChangeToken
+            let options = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
+            options.previousServerChangeToken = self.serverChangeToken
 
-        let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: [zoneID], configurationsByRecordZoneID: [zoneID: options])
+            let operation = CKFetchRecordZoneChangesOperation(
+                recordZoneIDs: [zoneID],
+                configurationsByRecordZoneID: [zoneID: options]
+            )
+            operation.qualityOfService = .userInitiated
 
-        operation.recordWasChangedBlock = { _, result in
-            switch result {
-            case .success(let record):
-                changedRecords.append(record)
-            case .failure(let error):
-                print("[CloudKit] Error fetching record: \(error)")
-            }
-        }
-
-        operation.recordWithIDWasDeletedBlock = { recordID, _ in
-            deletedRecordIDs.append(recordID)
-        }
-
-        operation.recordZoneChangeTokensUpdatedBlock = { [weak self] _, token, _ in
-            Task { @MainActor in
-                self?.serverChangeToken = token
-            }
-        }
-
-        operation.recordZoneFetchResultBlock = { [weak self] _, result in
-            switch result {
-            case .success(let (token, _, _)):
-                Task { @MainActor in
-                    self?.serverChangeToken = token
+            operation.recordWasChangedBlock = { _, recordResult in
+                switch recordResult {
+                case .success(let record):
+                    changedRecords.append(record)
+                case .failure(let error):
+                    print("[CloudKit] Error fetching record: \(error)")
                 }
-            case .failure(let error):
-                print("[CloudKit] Zone fetch error: \(error)")
             }
+
+            operation.recordWithIDWasDeletedBlock = { recordID, _ in
+                deletedRecordIDs.append(recordID)
+            }
+
+            operation.recordZoneChangeTokensUpdatedBlock = { _, token, _ in
+                latestToken = token
+            }
+
+            operation.recordZoneFetchResultBlock = { _, fetchResult in
+                switch fetchResult {
+                case .success(let (token, _, _)):
+                    latestToken = token
+                case .failure(let error):
+                    zoneError = error
+                }
+            }
+
+            // This is the key fix: fetchRecordZoneChangesResultBlock fires when the
+            // entire operation completes, so we resume the continuation here.
+            operation.fetchRecordZoneChangesResultBlock = { overallResult in
+                switch overallResult {
+                case .success:
+                    continuation.resume(returning: (changedRecords, deletedRecordIDs, latestToken))
+                case .failure(let error):
+                    continuation.resume(throwing: zoneError ?? error)
+                }
+            }
+
+            privateDatabase.add(operation)
         }
 
-        try await privateDatabase.add(operation)
+        // Update change token on the main actor
+        self.serverChangeToken = result.token
 
         // Process fetched changes
-        await processChangedRecords(changedRecords)
-        await processDeletedRecords(deletedRecordIDs)
+        isFetchingFromCloud = true
+        defer { isFetchingFromCloud = false }
 
-        print("[CloudKit] Fetched \(changedRecords.count) changed records, \(deletedRecordIDs.count) deletions")
+        await processChangedRecords(result.records)
+        await processDeletedRecords(result.deletions)
+
+        print("[CloudKit] Fetched \(result.records.count) changed records, \(result.deletions.count) deletions")
     }
 
     private func processChangedRecords(_ records: [CKRecord]) async {
+        guard !records.isEmpty else { return }
+
         let dataStore = DataStore.shared
 
         for record in records {
@@ -267,7 +328,6 @@ class CloudKitService: ObservableObject {
             case .person:
                 if let person = Person(from: record) {
                     if let index = dataStore.people.firstIndex(where: { $0.id == person.id }) {
-                        // Update if cloud version is newer
                         if person.updatedAt > dataStore.people[index].updatedAt {
                             dataStore.people[index] = person
                         }
@@ -364,11 +424,13 @@ class CloudKitService: ObservableObject {
             }
         }
 
-        // Save locally without triggering another sync
+        // Save locally (isFetchingFromCloud prevents re-triggering a push)
         dataStore.saveData()
     }
 
     private func processDeletedRecords(_ recordIDs: [CKRecord.ID]) async {
+        guard !recordIDs.isEmpty else { return }
+
         let dataStore = DataStore.shared
 
         for recordID in recordIDs {
@@ -386,70 +448,121 @@ class CloudKitService: ObservableObject {
         dataStore.saveData()
     }
 
-    // MARK: - Push Changes
+    // MARK: - Push Changes (FIXED: fetches existing records first to preserve system fields)
 
     private func pushChanges() async throws {
         guard let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
 
         let dataStore = DataStore.shared
-        var recordsToSave: [CKRecord] = []
 
-        // Convert all local data to CKRecords
+        // Step 1: Build fresh records with local field data
+        var freshRecords: [CKRecord] = []
+
         for person in dataStore.people {
-            recordsToSave.append(person.toCloudKitRecord(zoneID: zoneID))
+            freshRecords.append(person.toCloudKitRecord(zoneID: zoneID))
         }
-
         for meeting in dataStore.meetings {
-            recordsToSave.append(meeting.toCloudKitRecord(zoneID: zoneID))
+            freshRecords.append(meeting.toCloudKitRecord(zoneID: zoneID))
         }
-
         for goal in dataStore.goals {
-            recordsToSave.append(goal.toCloudKitRecord(zoneID: zoneID))
+            freshRecords.append(goal.toCloudKitRecord(zoneID: zoneID))
         }
-
         for template in dataStore.templates where !template.isBuiltIn {
-            recordsToSave.append(template.toCloudKitRecord(zoneID: zoneID))
+            freshRecords.append(template.toCloudKitRecord(zoneID: zoneID))
         }
-
         for fb in dataStore.feedback {
-            recordsToSave.append(fb.toCloudKitRecord(zoneID: zoneID))
+            freshRecords.append(fb.toCloudKitRecord(zoneID: zoneID))
         }
-
         for (personId, profile) in dataStore.careerProfiles {
-            recordsToSave.append(profile.toCloudKitRecord(zoneID: zoneID, personId: personId))
+            freshRecords.append(profile.toCloudKitRecord(zoneID: zoneID, personId: personId))
         }
-
         for (personId, entries) in dataStore.sentimentHistory {
             for entry in entries {
-                recordsToSave.append(entry.toCloudKitRecord(zoneID: zoneID, personId: personId))
+                freshRecords.append(entry.toCloudKitRecord(zoneID: zoneID, personId: personId))
+            }
+        }
+        for objective in dataStore.objectives {
+            freshRecords.append(objective.toCloudKitRecord(zoneID: zoneID))
+        }
+        for recording in dataStore.recordings {
+            freshRecords.append(recording.toCloudKitRecord(zoneID: zoneID))
+        }
+
+        guard !freshRecords.isEmpty else { return }
+
+        // Step 2: Fetch existing server records to get their system fields (change tags).
+        // Without this, CloudKit rejects updates to records that already exist on the server
+        // because fresh CKRecord objects have no change tag.
+        let recordIDs = freshRecords.map { $0.recordID }
+        var serverRecords: [CKRecord.ID: CKRecord] = [:]
+
+        // Batch fetch in chunks of 400 (CloudKit limit)
+        for chunk in stride(from: 0, to: recordIDs.count, by: 400) {
+            let end = min(chunk + 400, recordIDs.count)
+            let chunkIDs = Array(recordIDs[chunk..<end])
+
+            let fetchResults = try await privateDatabase.records(for: chunkIDs)
+            for (recordID, result) in fetchResults {
+                if case .success(let record) = result {
+                    serverRecords[recordID] = record
+                }
+                // .failure means record doesn't exist yet — that's fine
             }
         }
 
-        for objective in dataStore.objectives {
-            recordsToSave.append(objective.toCloudKitRecord(zoneID: zoneID))
+        // Step 3: Merge local fields onto server records (preserving system fields),
+        // or use fresh records for new entries
+        var recordsToSave: [CKRecord] = []
+
+        for freshRecord in freshRecords {
+            if let serverRecord = serverRecords[freshRecord.recordID] {
+                // Copy all local fields onto the server record (which has system fields)
+                for key in freshRecord.allKeys() {
+                    serverRecord[key] = freshRecord[key]
+                }
+                recordsToSave.append(serverRecord)
+            } else {
+                // New record — no server version exists, use fresh
+                recordsToSave.append(freshRecord)
+            }
         }
 
-        for recording in dataStore.recordings {
-            recordsToSave.append(recording.toCloudKitRecord(zoneID: zoneID))
-        }
+        // Step 4: Save with proper continuation to await completion
+        var saveFailures: [(String, Error)] = []
 
-        // Use batch operation
-        if !recordsToSave.isEmpty {
+        let saveResult: Void = try await withCheckedThrowingContinuation { continuation in
             let operation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: nil)
-            operation.savePolicy = .changedKeys
-            operation.isAtomic = false // Allow partial success
+            operation.savePolicy = .allKeys
+            operation.isAtomic = false
+            operation.qualityOfService = .userInitiated
 
             operation.perRecordSaveBlock = { recordID, result in
-                switch result {
-                case .success:
-                    break // Record saved
-                case .failure(let error):
-                    print("[CloudKit] Failed to save record \(recordID.recordName): \(error)")
+                if case .failure(let error) = result {
+                    saveFailures.append((recordID.recordName, error))
                 }
             }
 
-            try await privateDatabase.add(operation)
-            print("[CloudKit] Pushed \(recordsToSave.count) records")
+            operation.modifyRecordsResultBlock = { result in
+                switch result {
+                case .success:
+                    continuation.resume()
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            privateDatabase.add(operation)
+        }
+
+        _ = saveResult
+
+        if saveFailures.isEmpty {
+            print("[CloudKit] Pushed \(recordsToSave.count) records successfully")
+        } else {
+            print("[CloudKit] Pushed \(recordsToSave.count - saveFailures.count)/\(recordsToSave.count) records. \(saveFailures.count) failures:")
+            for (name, error) in saveFailures.prefix(5) {
+                print("[CloudKit]   \(name): \(error.localizedDescription)")
+            }
         }
     }
 
@@ -458,31 +571,53 @@ class CloudKitService: ObservableObject {
     func deleteFromCloud(_ person: Person) async {
         guard isConfigured, let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
         let recordID = CKRecord.ID(recordName: person.id.uuidString, zoneID: zoneID)
-        try? await privateDatabase.deleteRecord(withID: recordID)
+        do {
+            try await privateDatabase.deleteRecord(withID: recordID)
+            print("[CloudKit] Deleted person \(person.name) from cloud")
+        } catch {
+            print("[CloudKit] Failed to delete person: \(error.localizedDescription)")
+        }
     }
 
     func deleteFromCloud(_ meeting: Meeting) async {
         guard isConfigured, let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
         let recordID = CKRecord.ID(recordName: meeting.id.uuidString, zoneID: zoneID)
-        try? await privateDatabase.deleteRecord(withID: recordID)
+        do {
+            try await privateDatabase.deleteRecord(withID: recordID)
+            print("[CloudKit] Deleted meeting \(meeting.title) from cloud")
+        } catch {
+            print("[CloudKit] Failed to delete meeting: \(error.localizedDescription)")
+        }
     }
 
     func deleteFromCloud(_ goal: Goal) async {
         guard isConfigured, let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
         let recordID = CKRecord.ID(recordName: goal.id.uuidString, zoneID: zoneID)
-        try? await privateDatabase.deleteRecord(withID: recordID)
+        do {
+            try await privateDatabase.deleteRecord(withID: recordID)
+        } catch {
+            print("[CloudKit] Failed to delete goal: \(error.localizedDescription)")
+        }
     }
 
     func deleteFromCloud(_ objective: Objective) async {
         guard isConfigured, let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
         let recordID = CKRecord.ID(recordName: objective.id.uuidString, zoneID: zoneID)
-        try? await privateDatabase.deleteRecord(withID: recordID)
+        do {
+            try await privateDatabase.deleteRecord(withID: recordID)
+        } catch {
+            print("[CloudKit] Failed to delete objective: \(error.localizedDescription)")
+        }
     }
 
     func deleteFromCloud(_ feedback: Feedback) async {
         guard isConfigured, let privateDatabase = privateDatabase, let zoneID = zoneID else { return }
         let recordID = CKRecord.ID(recordName: feedback.id.uuidString, zoneID: zoneID)
-        try? await privateDatabase.deleteRecord(withID: recordID)
+        do {
+            try await privateDatabase.deleteRecord(withID: recordID)
+        } catch {
+            print("[CloudKit] Failed to delete feedback: \(error.localizedDescription)")
+        }
     }
 }
 

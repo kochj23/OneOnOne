@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import CloudKit
 
 @main
 struct OneOnOneApp: App {
@@ -19,10 +20,18 @@ struct OneOnOneApp: App {
     @StateObject private var calendarService = CalendarService.shared
     #endif
 
+    #if os(iOS)
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #elseif os(macOS)
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #endif
+
+    @Environment(\.scenePhase) private var scenePhase
+
     init() {
         // Trigger initial iCloud sync on launch
         Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // Wait 2 seconds for app to settle
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             await CloudKitService.shared.sync()
         }
     }
@@ -36,6 +45,11 @@ struct OneOnOneApp: App {
                 .environmentObject(syncService)
                 .environmentObject(cloudKitService)
                 .preferredColorScheme(.dark)
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        Task { await cloudKitService.handleRemoteNotification() }
+                    }
+                }
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1400, height: 900)
@@ -105,6 +119,11 @@ struct OneOnOneApp: App {
                 .environmentObject(syncService)
                 .environmentObject(cloudKitService)
                 .preferredColorScheme(.dark)
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        Task { await cloudKitService.handleRemoteNotification() }
+                    }
+                }
         }
 
         #elseif os(tvOS)
@@ -118,6 +137,44 @@ struct OneOnOneApp: App {
         #endif
     }
 }
+
+// MARK: - App Delegate for Remote Notification Handling
+
+#if os(iOS)
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        application.registerForRemoteNotifications()
+        return true
+    }
+
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        let notification = CKNotification(fromRemoteNotificationDictionary: userInfo)
+        if notification?.subscriptionID == "OneOnOne-Changes" {
+            Task { @MainActor in
+                await CloudKitService.shared.handleRemoteNotification()
+                completionHandler(.newData)
+            }
+        } else {
+            completionHandler(.noData)
+        }
+    }
+}
+#elseif os(macOS)
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApplication.shared.registerForRemoteNotifications()
+    }
+
+    func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
+        let notification = CKNotification(fromRemoteNotificationDictionary: userInfo)
+        if notification?.subscriptionID == "OneOnOne-Changes" {
+            Task { @MainActor in
+                await CloudKitService.shared.handleRemoteNotification()
+            }
+        }
+    }
+}
+#endif
 
 // MARK: - Notification Names
 

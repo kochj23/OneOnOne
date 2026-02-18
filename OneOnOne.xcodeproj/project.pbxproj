@@ -36,8 +36,8 @@
 		480E42D76BA1B2B01BD59870 /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
 		4D3259A8683F672E420F2969 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BD04B9BA820D820CB77AF8 /* SyncService.swift */; };
 		5125233AA9078CDCB887D08D /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
-		8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */; };
 		51676A45F4572A33644AEB98 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88504C6CEB2F176EB3543CB5 /* Recording.swift */; };
+		5428A963C9E0BE2C986C9EBE /* AIBackendManager+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A71018503246FF8585C501B /* AIBackendManager+Generation.swift */; };
 		54294A3EA5A1B9B1C7CEF67A /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
 		5439EBC17514386AFE0EBBE6 /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
 		569801E69ECF98D072C3F0C5 /* TeamInsightsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */; };
@@ -66,6 +66,7 @@
 		8133482FC6D13E1ECFF649EA /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */; };
 		853F7D5F70A0F06DC6C3EAC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B9DCDAD7D7C8828B535824 /* Assets.xcassets */; };
 		862B2B45970A54A9AD5D562C /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F2B45AB8EB30D8C04ECF03 /* WidgetData.swift */; };
+		8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */; };
 		8AE5967311C257C141AB8DBE /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A0B9C174655023804B6829 /* SharedDataManager.swift */; };
 		8C2F4AB3A073DE16B63C2477 /* ai_daemon.py in Resources */ = {isa = PBXBuildFile; fileRef = 3E02E89F96D802B33F3A8068 /* ai_daemon.py */; };
 		8DFFE55FB9DB4D013557F55C /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A0B9C174655023804B6829 /* SharedDataManager.swift */; };
@@ -73,8 +74,8 @@
 		958AB77E9739B7C028750D36 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */; };
 		9940D3798108B6DC24F207EF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		99924DF63640788E14E4A454 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */; };
-		8A2B3C4D5E6F708A /* OutlookCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */; };
 		9ABA8E8129D21FB1B90666AC /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F2B45AB8EB30D8C04ECF03 /* WidgetData.swift */; };
+		9C459FA48B2C91EC7845015D /* AIBackendManager+Enhanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE408A7662FC3CF9E349AE0 /* AIBackendManager+Enhanced.swift */; };
 		9CC32C97CB42427E82EE01FF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
 		A14923D8D92573F2E412CE73 /* CareerDevelopment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */; };
@@ -87,6 +88,7 @@
 		B3A3CCCBBC471F4672BD9483 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		B63BE768990B5FE603180C82 /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
 		B683BC605A3410B131A90127 /* TeamInsightsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */; };
+		BF66D516CE49A8BB1D2D71D7 /* AIBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6A703FCF3FE9B7539183A7 /* AIBackendManager.swift */; };
 		C1BC231E6423A0B7E27C01B5 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
 		C38153F1D6CF3CA7C3ED6C9B /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		C8FABB3D7803A54BB2994DEE /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
@@ -94,6 +96,7 @@
 		CF21E0DD62DA8EC05A97E705 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
 		CF5C5B4258A2CC3F158978D2 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
 		D21E1FFC31914BB438EF8B20 /* ActionItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */; };
+		D51B5DCA94BC90B63CE02141 /* AIBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5334EAB5A40BCB51624E6BA /* AIBackendStatusMenu.swift */; };
 		D811904952AA8B5AD2A4289E /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
 		D90DBC41B8ECA03F94AE6F61 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B9DCDAD7D7C8828B535824 /* Assets.xcassets */; };
 		DAC63D8381E2449361FD63F1 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
@@ -162,7 +165,10 @@
 		23BD04B9BA820D820CB77AF8 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
 		27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
+		2A71018503246FF8585C501B /* AIBackendManager+Generation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AIBackendManager+Generation.swift"; path = "OneOnOne Widget/AIBackendManager+Generation.swift"; sourceTree = "<group>"; };
+		2AE408A7662FC3CF9E349AE0 /* AIBackendManager+Enhanced.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AIBackendManager+Enhanced.swift"; path = "OneOnOne Widget/AIBackendManager+Enhanced.swift"; sourceTree = "<group>"; };
 		2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitService.swift; sourceTree = "<group>"; };
+		2E6A703FCF3FE9B7539183A7 /* AIBackendManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AIBackendManager.swift; path = "OneOnOne Widget/AIBackendManager.swift"; sourceTree = "<group>"; };
 		34B9DCDAD7D7C8828B535824 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		369280E760FB6F801B312C83 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		3E02E89F96D802B33F3A8068 /* ai_daemon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ai_daemon.py; sourceTree = "<group>"; };
@@ -180,6 +186,7 @@
 		82A831B431E24CF97F1169A2 /* OneOnOne.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneOnOne.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82CC82841C71E6DDE6BF9F31 /* OKRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKRView.swift; sourceTree = "<group>"; };
 		88504C6CEB2F176EB3543CB5 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
+		8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookCalendarService.swift; sourceTree = "<group>"; };
 		8F6AF5292F111CC503638B10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		91F2B45AB8EB30D8C04ECF03 /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
 		927983B03290EA43DD6D2F63 /* TemplatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatesView.swift; sourceTree = "<group>"; };
@@ -195,7 +202,6 @@
 		B4B6D18D72535ABF30159519 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
-		8A2B3C4D5E6F7089 /* OutlookCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookCalendarService.swift; sourceTree = "<group>"; };
 		BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerDevelopment.swift; sourceTree = "<group>"; };
 		CC1097332AF67BEE0C63EAFB /* OneOnOneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOnOneWidget.swift; sourceTree = "<group>"; };
 		CF68E714811E26B19A231ABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -204,6 +210,7 @@
 		D4517F48E7C8CAE568A825CA /* OneOnOne_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneOnOne_Widget.entitlements; sourceTree = "<group>"; };
 		D8EC98E8254172A18F3FD76E /* OneOnOne-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OneOnOne-iOS.entitlements"; sourceTree = "<group>"; };
 		DD3AE0BD5CB67112935B95F2 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		E5334EAB5A40BCB51624E6BA /* AIBackendStatusMenu.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AIBackendStatusMenu.swift; path = "OneOnOne Widget/AIBackendStatusMenu.swift"; sourceTree = "<group>"; };
 		E561DE74CEF4893A0CE0F63A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
 		F58E4850AE87DD8616025749 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
@@ -220,6 +227,7 @@
 				541BFE7027BB9363BA74AA41 /* OneOnOne Widget */,
 				DFB1120E14B09803B52524EA /* Python */,
 				FF7D67202693A3DD8C3C71C2 /* Products */,
+				D3FFEA38F2C447410BD0B96D /* AIBackend */,
 			);
 			sourceTree = "<group>";
 		};
@@ -283,6 +291,17 @@
 				9D943A2964A91874A193C966 /* ModernDesign.swift */,
 			);
 			path = Design;
+			sourceTree = "<group>";
+		};
+		D3FFEA38F2C447410BD0B96D /* AIBackend */ = {
+			isa = PBXGroup;
+			children = (
+				2E6A703FCF3FE9B7539183A7 /* AIBackendManager.swift */,
+				2A71018503246FF8585C501B /* AIBackendManager+Generation.swift */,
+				2AE408A7662FC3CF9E349AE0 /* AIBackendManager+Enhanced.swift */,
+				E5334EAB5A40BCB51624E6BA /* AIBackendStatusMenu.swift */,
+			);
+			name = AIBackend;
 			sourceTree = "<group>";
 		};
 		DFB1120E14B09803B52524EA /* Python */ = {
@@ -372,8 +391,6 @@
 				8661251B2295E3540974574F /* PBXTargetDependency */,
 			);
 			name = OneOnOne;
-			packageProductDependencies = (
-			);
 			productName = OneOnOne;
 			productReference = 82A831B431E24CF97F1169A2 /* OneOnOne.app */;
 			productType = "com.apple.product-type.application";
@@ -389,8 +406,6 @@
 			dependencies = (
 			);
 			name = "OneOnOneWidget-macOS";
-			packageProductDependencies = (
-			);
 			productName = "OneOnOneWidget-macOS";
 			productReference = 4CC5D720F439A167711B5727 /* OneOnOneWidget-macOS.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -406,8 +421,6 @@
 			dependencies = (
 			);
 			name = "OneOnOneWidget-iOS";
-			packageProductDependencies = (
-			);
 			productName = "OneOnOneWidget-iOS";
 			productReference = 73EF490595A0E2F1C81D8E35 /* OneOnOneWidget-iOS.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -426,8 +439,6 @@
 				D4C480AD28280FC12D65B891 /* PBXTargetDependency */,
 			);
 			name = "OneOnOne-iOS";
-			packageProductDependencies = (
-			);
 			productName = "OneOnOne-iOS";
 			productReference = 79EA35EAFA62138C0431A8F6 /* OneOnOne-iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -470,6 +481,7 @@
 			mainGroup = 38780DE60E0259258592979D;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			productRefGroup = FF7D67202693A3DD8C3C71C2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -576,6 +588,10 @@
 				67792FF7FCEECA83A3DA3F5E /* Template.swift in Sources */,
 				0F5B73E6E647822A8934AD5E /* TemplatesView.swift in Sources */,
 				65F750C2FB31C986CF45D597 /* WidgetSyncService.swift in Sources */,
+				BF66D516CE49A8BB1D2D71D7 /* AIBackendManager.swift in Sources */,
+				5428A963C9E0BE2C986C9EBE /* AIBackendManager+Generation.swift in Sources */,
+				9C459FA48B2C91EC7845015D /* AIBackendManager+Enhanced.swift in Sources */,
+				D51B5DCA94BC90B63CE02141 /* AIBackendStatusMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
