@@ -559,28 +559,32 @@ class OutlookCalendarService: NSObject, ObservableObject {
             let existingMeeting = existingMeetings.first { $0.outlookEventId == event.id }
 
             if existingMeeting == nil {
-                // Check if this looks like a 1:1 meeting (by title or attendee count)
+                // Determine meeting type from attendee count and title
                 let attendeeCount = event.attendees?.count ?? 0
-                let is1on1 = attendeeCount <= 2 || event.subject.lowercased().contains("1:1") || event.subject.lowercased().contains("one on one")
+                let meetingType = Self.inferMeetingType(subject: event.subject, attendeeCount: attendeeCount)
 
-                if is1on1 {
-                    // Create meeting in OneOnOne
-                    let newMeeting = Meeting(
-                        id: UUID(),
-                        title: event.subject,
-                        date: event.startDate,
-                        duration: event.endDate.timeIntervalSince(event.startDate),
-                        attendees: [],
-                        meetingType: .oneOnOne,
-                        location: event.location?.displayName,
-                        calendarEventId: nil,
-                        outlookEventId: event.id,
-                        agenda: event.bodyPreview,
-                        notes: ""
-                    )
-
-                    DataStore.shared.addMeeting(newMeeting)
+                // Match attendees to existing People by email
+                let matchedAttendees: [UUID] = (event.attendees ?? []).compactMap { attendee in
+                    let email = attendee.emailAddress.address
+                    guard !email.isEmpty else { return nil }
+                    return DataStore.shared.people.first { $0.email?.lowercased() == email.lowercased() }?.id
                 }
+
+                let newMeeting = Meeting(
+                    id: UUID(),
+                    title: event.subject,
+                    date: event.startDate,
+                    duration: event.endDate.timeIntervalSince(event.startDate),
+                    attendees: matchedAttendees,
+                    meetingType: meetingType,
+                    location: event.location?.displayName,
+                    calendarEventId: nil,
+                    outlookEventId: event.id,
+                    agenda: event.bodyPreview,
+                    notes: ""
+                )
+
+                DataStore.shared.addMeeting(newMeeting)
             }
         }
     }
@@ -602,6 +606,44 @@ class OutlookCalendarService: NSObject, ObservableObject {
         )
 
         return event.id
+    }
+
+    // MARK: - Meeting Type Inference
+
+    /// Infers meeting type from subject keywords and attendee count
+    static func inferMeetingType(subject: String, attendeeCount: Int) -> MeetingType {
+        let lower = subject.lowercased()
+
+        if lower.contains("stand-up") || lower.contains("standup") || lower.contains("daily scrum") {
+            return .standUp
+        }
+        if lower.contains("retro") {
+            return .retrospective
+        }
+        if lower.contains("planning") || lower.contains("sprint plan") {
+            return .planning
+        }
+        if lower.contains("review") || lower.contains("demo") {
+            return .review
+        }
+        if lower.contains("brainstorm") || lower.contains("ideation") {
+            return .brainstorm
+        }
+        if lower.contains("interview") {
+            return .interview
+        }
+        if lower.contains("training") || lower.contains("workshop") || lower.contains("learning") {
+            return .training
+        }
+        if lower.contains("1:1") || lower.contains("one on one") || lower.contains("1-on-1") || lower.contains("one-on-one") {
+            return .oneOnOne
+        }
+
+        if attendeeCount <= 2 {
+            return .oneOnOne
+        }
+
+        return .teamMeeting
     }
 
     // MARK: - PKCE Helpers

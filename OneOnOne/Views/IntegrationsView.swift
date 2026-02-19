@@ -16,6 +16,7 @@ struct IntegrationsView: View {
     @State private var showSlackSetup = false
     @State private var showTeamsSetup = false
     @State private var showOutlookSetup = false
+    @State private var showWebImport = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,6 +51,9 @@ struct IntegrationsView: View {
         .sheet(isPresented: $showOutlookSetup) {
             OutlookSetupView()
         }
+        .sheet(isPresented: $showWebImport) {
+            OutlookWebImportView()
+        }
     }
 
     // MARK: - Calendar Integrations
@@ -62,9 +66,64 @@ struct IntegrationsView: View {
                 .textCase(.uppercase)
                 .tracking(1)
 
-            // Outlook Calendar
+            // Quick Import via Web
+            quickImportCard
+
+            // Outlook Calendar (Full OAuth Setup)
             outlookCalendarCard
         }
+    }
+
+    private var quickImportCard: some View {
+        HStack(spacing: 20) {
+            // Icon
+            Image(systemName: "globe")
+                .font(.system(size: 32))
+                .foregroundColor(Color(hex: "#0078D4"))
+                .frame(width: 64, height: 64)
+                .background(Color(hex: "#0078D4").opacity(0.15))
+                .cornerRadius(16)
+
+            // Info
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("Quick Import from Outlook")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(ModernColors.textPrimary)
+
+                    Text("Easy")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(ModernColors.accentGreen)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(ModernColors.accentGreen.opacity(0.15))
+                        .cornerRadius(6)
+                }
+
+                Text("Sign in to Outlook in your browser and import calendar meetings. No Azure AD setup required.")
+                    .font(.system(size: 14))
+                    .foregroundColor(ModernColors.textSecondary)
+                    .lineLimit(2)
+            }
+
+            Spacer()
+
+            Button(action: { showWebImport = true }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "square.and.arrow.down")
+                    Text("Import")
+                }
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(Color(hex: "#0078D4"))
+                .cornerRadius(10)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(24)
+        .glassCard()
     }
 
     private var outlookCalendarCard: some View {
