@@ -69,6 +69,7 @@ struct MeetingsView: View {
             // Meeting detail
             if let meeting = selectedMeeting {
                 MeetingDetailView(meeting: binding(for: meeting))
+                    .id(meeting.id)
             } else {
                 emptyDetailView
             }
