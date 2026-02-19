@@ -51,7 +51,7 @@ class AIBackendManager: ObservableObject {
     @Published var swarmUIServerURL: String = "http://localhost:7801"
 
     // Active backend
-    @Published var activeBackend: AIBackend = .ollama
+    @Published var activeBackend: AIBackend? = .ollama
     @Published var lastRefreshDate: Date?
 
     // Cloud AI Services - API Keys (WARNING: Use Keychain in production!)
@@ -485,7 +485,7 @@ class AIBackendManager: ObservableObject {
         defaults.set(ibmWatsonAPIKey, forKey: "AIBackend_IBM_Key")
         defaults.set(ibmWatsonURL, forKey: "AIBackend_IBM_URL")
 
-        defaults.set(activeBackend.rawValue, forKey: "AIBackend_Active")
+        defaults.set(activeBackend?.rawValue, forKey: "AIBackend_Active")
     }
 }
 

@@ -14,6 +14,8 @@
 		09140FC1FA8313F9C2D9A6CC /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */; };
 		096991FDFC2FB502D97D36E9 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */; };
 		0B74393BAF84A0EB021C2AC6 /* OneOnOneWidget-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 73EF490595A0E2F1C81D8E35 /* OneOnOneWidget-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0CA3DE93C9FED0E85EB15578 /* EditMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF755155519D755A03D7FE0F /* EditMeetingView.swift */; };
+		AE51252A0BB2EB47C0D0F0FE /* EditMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF755155519D755A03D7FE0F /* EditMeetingView.swift */; };
 		0CD746CD08B26F33EF041D85 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
 		0F5B73E6E647822A8934AD5E /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927983B03290EA43DD6D2F63 /* TemplatesView.swift */; };
 		17B8894C30EF67C70A077050 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA822A2312A387AE94A4B5 /* Meeting.swift */; };
@@ -160,6 +162,7 @@
 		038D00229054740213C66535 /* IntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationService.swift; sourceTree = "<group>"; };
 		0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInsightsService.swift; sourceTree = "<group>"; };
 		0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMeetingView.swift; sourceTree = "<group>"; };
+		CF755155519D755A03D7FE0F /* EditMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMeetingView.swift; sourceTree = "<group>"; };
 		1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		17AF636DDD4D792771AE0F8B /* OKR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKR.swift; sourceTree = "<group>"; };
 		23BD04B9BA820D820CB77AF8 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
@@ -321,6 +324,7 @@
 				49CA6A6623896F6D970D28D1 /* CareerView.swift */,
 				8F6AF5292F111CC503638B10 /* ContentView.swift */,
 				BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */,
+				CF755155519D755A03D7FE0F /* EditMeetingView.swift */,
 				27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */,
 				AA5CED1E740986B30F62332F /* GoalsView.swift */,
 				F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */,
@@ -557,6 +561,7 @@
 				6E374587DDFEF7235C4E321D /* CloudKitService.swift in Sources */,
 				0087E09BE6DE82DA0C7836A7 /* ContentView.swift in Sources */,
 				9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */,
+				0CA3DE93C9FED0E85EB15578 /* EditMeetingView.swift in Sources */,
 				096991FDFC2FB502D97D36E9 /* DataStore.swift in Sources */,
 				C1BC231E6423A0B7E27C01B5 /* Feedback.swift in Sources */,
 				77FEBF5864FE66F6977D9CD3 /* FeedbackView.swift in Sources */,
@@ -609,6 +614,7 @@
 				958AB77E9739B7C028750D36 /* CloudKitService.swift in Sources */,
 				3425FE8A99A486BD94A1299C /* ContentView.swift in Sources */,
 				CF5C5B4258A2CC3F158978D2 /* DashboardView.swift in Sources */,
+				AE51252A0BB2EB47C0D0F0FE /* EditMeetingView.swift in Sources */,
 				F17D2D1D836E057E30B0D54D /* DataStore.swift in Sources */,
 				CF21E0DD62DA8EC05A97E705 /* Feedback.swift in Sources */,
 				8133482FC6D13E1ECFF649EA /* FeedbackView.swift in Sources */,
@@ -866,7 +872,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -881,7 +887,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -948,7 +954,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -969,7 +975,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.3.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

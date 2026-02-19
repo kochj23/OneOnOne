@@ -43,7 +43,7 @@ extension AIBackendManager {
                     await MainActor.run {
                         sendNotification(
                             title: "Backend Fallback",
-                            message: "Switched to \(backend.rawValue) after \(previousBackend.rawValue) failed"
+                            message: "Switched to \(backend.rawValue) after \(previousBackend?.rawValue ?? "none") failed"
                         )
                     }
                 }
@@ -63,8 +63,7 @@ extension AIBackendManager {
         var backends: [AIBackend] = []
 
         // Start with currently selected
-        let active = activeBackend
-        if isBackendAvailable(active) {
+        if let active = activeBackend, isBackendAvailable(active) {
             backends.append(active)
         }
 

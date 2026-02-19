@@ -80,7 +80,7 @@ struct AIBackendStatusMenu: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(statusColor)
 
-                    Text(manager.activeBackend.rawValue)
+                    Text(manager.activeBackend?.rawValue ?? "None")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                 }

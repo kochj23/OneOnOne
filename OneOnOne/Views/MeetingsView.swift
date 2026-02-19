@@ -358,6 +358,7 @@ struct MeetingDetailView: View {
     @State private var newActionItemAssignee: UUID? = nil
     @State private var showDueDatePicker = false
     @State private var aiSummaryError: String? = nil
+    @State private var showEditMeeting = false
 
     var body: some View {
         ScrollView {
@@ -386,6 +387,9 @@ struct MeetingDetailView: View {
             }
             .padding(32)
         }
+        .sheet(isPresented: $showEditMeeting) {
+            EditMeetingView(meeting: $meeting)
+        }
     }
 
     private var header: some View {
@@ -399,6 +403,23 @@ struct MeetingDetailView: View {
                     .modernHeader(size: .large)
 
                 Spacer()
+
+                // Edit button
+                Button {
+                    showEditMeeting = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "pencil")
+                        Text("Edit")
+                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(ModernColors.accentBlue)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(ModernColors.accentBlue.opacity(0.2))
+                    .cornerRadius(10)
+                }
+                .buttonStyle(.plain)
 
                 // AI Summary button
                 Button {

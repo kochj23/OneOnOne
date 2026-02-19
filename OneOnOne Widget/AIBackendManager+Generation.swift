@@ -26,6 +26,10 @@ extension AIBackendManager {
             throw AIError.noBackendAvailable
         }
 
+        guard let activeBackend else {
+            throw AIError.noBackendAvailable
+        }
+
         switch activeBackend {
         case .ollama:
             return try await generateWithOllama(
