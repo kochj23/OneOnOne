@@ -35,13 +35,13 @@ class AIService: ObservableObject {
 
     // MARK: - Configuration
 
-    var ollamaEndpoint = "http://localhost:11434"
-    var ollamaModel = "llama3.2"
-    var openWebUIEndpoint = "http://localhost:8080"
-    var openWebUIModel = "llama3.2"
-    var mlxEndpoint = "http://localhost:8800"
-    var mlxModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
-    var tinyChatEndpoint = "http://localhost:5000"
+    @Published var ollamaEndpoint = "http://localhost:11434"
+    @Published var ollamaModel = "llama3.2"
+    @Published var openWebUIEndpoint = "http://localhost:3000"
+    @Published var openWebUIModel = "llama3.2"
+    @Published var mlxEndpoint = "http://localhost:8800"
+    @Published var mlxModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
+    @Published var tinyChatEndpoint = "http://localhost:8000"
 
     // MARK: - MLX Daemon (for local MLX inference)
 
@@ -140,9 +140,12 @@ class AIService: ObservableObject {
             var request = URLRequest(url: url)
             request.timeoutInterval = 5
             let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse,
-               (200...299).contains(httpResponse.statusCode) {
-                isOpenWebUIAvailable = true
+            if let httpResponse = response as? HTTPURLResponse {
+                // 401/403 means OpenWebUI is running but requires auth — still available
+                let reachable = (200...299).contains(httpResponse.statusCode)
+                    || httpResponse.statusCode == 401
+                    || httpResponse.statusCode == 403
+                isOpenWebUIAvailable = reachable
             } else {
                 isOpenWebUIAvailable = false
             }
@@ -174,25 +177,29 @@ class AIService: ObservableObject {
     }
 
     private func checkTinyChat() async {
-        // TinyChat uses OpenAI-compatible API
-        guard let url = URL(string: "\(tinyChatEndpoint)/v1/models") else {
-            isTinyChatAvailable = false
-            return
+        // TinyChat serves a web UI at root and may use /v1/models or just /
+        // Try /v1/models first, then fall back to root
+        let endpoints = ["\(tinyChatEndpoint)/v1/models", tinyChatEndpoint]
+
+        for endpoint in endpoints {
+            guard let url = URL(string: endpoint) else { continue }
+
+            do {
+                var request = URLRequest(url: url)
+                request.timeoutInterval = 5
+                let (_, response) = try await URLSession.shared.data(for: request)
+                if let httpResponse = response as? HTTPURLResponse,
+                   (200...499).contains(httpResponse.statusCode) {
+                    // Any non-connection-error response means the service is running
+                    isTinyChatAvailable = true
+                    return
+                }
+            } catch {
+                continue
+            }
         }
 
-        do {
-            var request = URLRequest(url: url)
-            request.timeoutInterval = 5
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse,
-               (200...299).contains(httpResponse.statusCode) {
-                isTinyChatAvailable = true
-            } else {
-                isTinyChatAvailable = false
-            }
-        } catch {
-            isTinyChatAvailable = false
-        }
+        isTinyChatAvailable = false
     }
 
     // MARK: - AI Features
