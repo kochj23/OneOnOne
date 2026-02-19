@@ -103,13 +103,28 @@ class AIService: ObservableObject {
         do {
             var request = URLRequest(url: url)
             request.timeoutInterval = 5
-            let (_, response) = try await URLSession.shared.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse,
-               (200...299).contains(httpResponse.statusCode) {
-                isOllamaAvailable = true
-            } else {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
                 isOllamaAvailable = false
+                return
             }
+
+            // Verify the configured model is available
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let models = json["models"] as? [[String: Any]] {
+                let modelNames = models.compactMap { $0["name"] as? String }
+                let configuredModel = ollamaModel.lowercased()
+                let modelFound = modelNames.contains { name in
+                    let lower = name.lowercased()
+                    return lower == configuredModel || lower.hasPrefix(configuredModel + ":")
+                }
+                if !modelFound {
+                    print("AIService: Ollama available but model '\(ollamaModel)' not found. Available: \(modelNames.joined(separator: ", "))")
+                }
+            }
+
+            isOllamaAvailable = true
         } catch {
             isOllamaAvailable = false
         }
@@ -397,11 +412,26 @@ class AIService: ObservableObject {
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, httpResponse) = try await URLSession.shared.data(for: request)
 
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? String else {
+        // Check HTTP status code
+        if let http = httpResponse as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            let body = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw AIServiceError.generationFailed("Ollama HTTP \(http.statusCode): \(String(body.prefix(200)))")
+        }
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw AIServiceError.invalidResponse
+        }
+
+        // Check for Ollama error responses (e.g. model not found)
+        if let error = json["error"] as? String {
+            throw AIServiceError.generationFailed("Ollama: \(error)")
+        }
+
+        guard let response = json["response"] as? String else {
+            let keys = json.keys.joined(separator: ", ")
+            throw AIServiceError.generationFailed("Ollama response missing 'response' field. Keys: \(keys)")
         }
 
         return response.trimmingCharacters(in: .whitespacesAndNewlines)
