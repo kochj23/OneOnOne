@@ -674,6 +674,8 @@ enum AIServiceError: LocalizedError {
 struct AISettingsView: View {
     @ObservedObject var aiService = AIService.shared
     @State private var isChecking = false
+    @State private var ollamaModels: [String] = []
+    @State private var isFetchingModels = false
 
     var body: some View {
         Form {
@@ -716,6 +718,7 @@ struct AISettingsView: View {
                     isChecking = true
                     Task {
                         await aiService.checkBackendAvailability()
+                        await fetchOllamaModels()
                         isChecking = false
                     }
                 }
@@ -725,9 +728,42 @@ struct AISettingsView: View {
             Section(header: Text("Ollama")) {
                 TextField("Endpoint", text: $aiService.ollamaEndpoint)
                     .textContentType(.URL)
-                TextField("Model", text: $aiService.ollamaModel)
+
+                if ollamaModels.isEmpty {
+                    HStack {
+                        TextField("Model", text: $aiService.ollamaModel)
+                        Button {
+                            Task { await fetchOllamaModels() }
+                        } label: {
+                            Image(systemName: isFetchingModels ? "arrow.triangle.2.circlepath" : "arrow.clockwise")
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isFetchingModels)
+                    }
+                } else {
+                    Picker("Model", selection: $aiService.ollamaModel) {
+                        ForEach(ollamaModels, id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                        // Include current model if not in list (e.g. manually typed)
+                        if !ollamaModels.contains(aiService.ollamaModel) {
+                            Text("\(aiService.ollamaModel) (not found)")
+                                .foregroundColor(.red)
+                                .tag(aiService.ollamaModel)
+                        }
+                    }
+
+                    if !ollamaModels.contains(aiService.ollamaModel) {
+                        Text("Model '\(aiService.ollamaModel)' is not installed in Ollama. Select an available model above.")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
             }
-            .onChange(of: aiService.ollamaEndpoint) { _, _ in aiService.saveConfiguration() }
+            .onChange(of: aiService.ollamaEndpoint) { _, _ in
+                aiService.saveConfiguration()
+                Task { await fetchOllamaModels() }
+            }
             .onChange(of: aiService.ollamaModel) { _, _ in aiService.saveConfiguration() }
 
             Section(header: Text("OpenWebUI")) {
@@ -766,6 +802,32 @@ struct AISettingsView: View {
         #if os(macOS)
         .formStyle(.grouped)
         #endif
+        .onAppear {
+            Task { await fetchOllamaModels() }
+        }
+    }
+
+    private func fetchOllamaModels() async {
+        guard let url = URL(string: "\(aiService.ollamaEndpoint)/api/tags") else { return }
+        isFetchingModels = true
+        defer { isFetchingModels = false }
+
+        do {
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 5
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else { return }
+
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let models = json["models"] as? [[String: Any]] {
+                let names = models.compactMap { $0["name"] as? String }.sorted()
+                await MainActor.run {
+                    ollamaModels = names
+                }
+            }
+        } catch {
+            print("AISettings: Failed to fetch Ollama models: \(error.localizedDescription)")
+        }
     }
 }
 
