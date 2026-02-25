@@ -67,3 +67,6 @@ venv/
 
 # Archives
 *.xcarchive
+
+# Backups (may contain PII)
+backups/
