@@ -19,7 +19,7 @@ Or build from source (see [Building from Source](#building-from-source) below).
 ## Why OneOnOne?
 
 - **For Engineering Managers** -- Purpose-built for the specific workflow of managing 1:1s and team meetings
-- **AI-Powered Summaries** -- Automatically generate meeting summaries from your notes using local AI (MLX) or cloud providers
+- **AI-Powered Summaries** -- Automatically generate meeting summaries from your notes using local AI via MLX (Machine Learning eXtensions) or cloud providers
 - **Action Item Tracking** -- Never let a follow-up slip through the cracks
 - **Privacy-First** -- All data stored locally. AI runs on your machine with MLX models.
 - **Native macOS & iOS** -- Built with SwiftUI, not a web wrapper. Fast, lightweight, and beautiful.
@@ -168,7 +168,7 @@ OneOnOne uses local MLX models for all AI features, ensuring your meeting data n
 ## Installation
 
 ### macOS
-Download the DMG from the releases page and drag OneOnOne to your Applications folder.
+Download the DMG (Disk Image) from the releases page and drag OneOnOne to your Applications folder.
 
 ### iOS
 Install from the App Store or TestFlight (coming soon).
