@@ -12,7 +12,7 @@
 
 ## Download
 
-Download the latest release: [OneOnOne v2.2.0](https://github.com/kochj23/OneOnOne/releases/latest)
+Download the latest release: [OneOnOne v2.7.0](https://github.com/kochj23/OneOnOne/releases/latest)
 
 Or build from source (see [Building from Source](#building-from-source) below).
 
@@ -105,6 +105,15 @@ Or build from source (see [Building from Source](#building-from-source) below).
 - **Conversation Starters**: AI suggestions for upcoming 1:1s based on past discussions
 - **Action Item Extraction**: Automatically identify action items from notes
 - **Goal Analysis**: AI assessment of goal progress and recommendations
+
+### Nova API (macOS only — v2.7.0+)
+Local HTTP API on `127.0.0.1:37421` for AI assistant integration (e.g. OpenClaw/Nova):
+- `GET /api/status` — check if app is running
+- `GET /api/meetings?limit=N` — list recent meetings
+- `GET /api/meetings/{uuid}` — get a specific meeting
+- `GET /api/people` — list all people
+- `POST /api/summarize` — submit email/text content, receive AI summary
+- `POST /api/meetings/{uuid}/summary` — generate and save an AI summary for a meeting
 
 ### Calendar Integration (macOS and iOS)
 - Sync with system Calendar app

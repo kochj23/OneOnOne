@@ -15,13 +15,6 @@
 		096991FDFC2FB502D97D36E9 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */; };
 		0B74393BAF84A0EB021C2AC6 /* OneOnOneWidget-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 73EF490595A0E2F1C81D8E35 /* OneOnOneWidget-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0CA3DE93C9FED0E85EB15578 /* EditMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF755155519D755A03D7FE0F /* EditMeetingView.swift */; };
-		AE51252A0BB2EB47C0D0F0FE /* EditMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF755155519D755A03D7FE0F /* EditMeetingView.swift */; };
-		A1B2C3D4E5F60718293A4B5C /* OutlookWebImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */; };
-		B2C3D4E5F6071829A34B5C6D /* OutlookWebImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */; };
-		C3D4E5F6A7B80919384A5B6C /* OLMImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */; };
-		D4E5F6A7B8C91A2B4C5D6E7F /* OLMImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */; };
-		E5F6A7B8C9DA2B3C5D6E7F80 /* OLMImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */; };
-		F7B8C9DAE0F14C5D6E7F8091 /* OLMImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */; };
 		0CD746CD08B26F33EF041D85 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
 		0F5B73E6E647822A8934AD5E /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927983B03290EA43DD6D2F63 /* TemplatesView.swift */; };
 		17B8894C30EF67C70A077050 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA822A2312A387AE94A4B5 /* Meeting.swift */; };
@@ -69,6 +62,7 @@
 		77FEBF5864FE66F6977D9CD3 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */; };
 		78286AE444C01ED8B2AF68D3 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58E4850AE87DD8616025749 /* AIService.swift */; };
 		79FE395524C0CBADF5C180C0 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */; };
+		7A67E6F5B8FE135A9BBCE73F /* NovaAPIServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D522572603C75E282AD63371 /* NovaAPIServer.swift */; };
 		7FAF12F66AD08EB83D2A6B99 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D943A2964A91874A193C966 /* ModernDesign.swift */; };
 		811E1A89E640432B021A0041 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369280E760FB6F801B312C83 /* SearchService.swift */; };
 		8133482FC6D13E1ECFF649EA /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E9C5E7BB827B2FB0C6F764 /* FeedbackView.swift */; };
@@ -87,11 +81,14 @@
 		9CC32C97CB42427E82EE01FF /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		9DA9F5D1B71FF743E20DEE37 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
 		A14923D8D92573F2E412CE73 /* CareerDevelopment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* OutlookWebImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */; };
 		A4389EABCAFB1D0B7B9DF062 /* CareerDevelopment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */; };
 		A67E6632495A29734BA56F77 /* NewPersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51BF8E4E3AC222C5D2FAA4F9 /* NewPersonView.swift */; };
 		AAA2ED8D93B0E62CBD24F50F /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
+		AE51252A0BB2EB47C0D0F0FE /* EditMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF755155519D755A03D7FE0F /* EditMeetingView.swift */; };
 		AED993A7E2F27B924D8202B6 /* OneOnOneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1097332AF67BEE0C63EAFB /* OneOnOneWidget.swift */; };
 		B13166D05BF30D03DAB6F970 /* Meeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA822A2312A387AE94A4B5 /* Meeting.swift */; };
+		B2C3D4E5F6071829A34B5C6D /* OutlookWebImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */; };
 		B3577E7EBE38F886DBCFC109 /* IntegrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038D00229054740213C66535 /* IntegrationService.swift */; };
 		B3A3CCCBBC471F4672BD9483 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
 		B63BE768990B5FE603180C82 /* OKRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC82841C71E6DDE6BF9F31 /* OKRView.swift */; };
@@ -99,11 +96,13 @@
 		BF66D516CE49A8BB1D2D71D7 /* AIBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6A703FCF3FE9B7539183A7 /* AIBackendManager.swift */; };
 		C1BC231E6423A0B7E27C01B5 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
 		C38153F1D6CF3CA7C3ED6C9B /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */; };
+		C3D4E5F6A7B80919384A5B6C /* OLMImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */; };
 		C8FABB3D7803A54BB2994DEE /* NewGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F091BF5341F7E20CA66863 /* NewGoalView.swift */; };
 		CC9156DE1E234C204B0ACBFC /* OKR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF636DDD4D792771AE0F8B /* OKR.swift */; };
 		CF21E0DD62DA8EC05A97E705 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795D046D558A243A2F0E09CF /* Feedback.swift */; };
 		CF5C5B4258A2CC3F158978D2 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */; };
 		D21E1FFC31914BB438EF8B20 /* ActionItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */; };
+		D4E5F6A7B8C91A2B4C5D6E7F /* OLMImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */; };
 		D51B5DCA94BC90B63CE02141 /* AIBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5334EAB5A40BCB51624E6BA /* AIBackendStatusMenu.swift */; };
 		D811904952AA8B5AD2A4289E /* Sentiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8252D1622BAD4A0242E17DF5 /* Sentiment.swift */; };
 		D90DBC41B8ECA03F94AE6F61 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34B9DCDAD7D7C8828B535824 /* Assets.xcassets */; };
@@ -111,10 +110,12 @@
 		DAD92485D566C6DD5E57C032 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5CED1E740986B30F62332F /* GoalsView.swift */; };
 		E37A7C5BA157443C1D6B072F /* TeamInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85152DCACCCFD436EB19059 /* TeamInsightsView.swift */; };
 		E511C416FD0F5ED8C63FEF89 /* WidgetSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD874F6E782B03E440F31B7 /* WidgetSyncService.swift */; };
+		E5F6A7B8C9DA2B3C5D6E7F80 /* OLMImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */; };
 		EC3F8BEB4E07456F0DEC1993 /* NewMeetingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */; };
 		EF02A07B4800A80F26DACA51 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88504C6CEB2F176EB3543CB5 /* Recording.swift */; };
 		F17D2D1D836E057E30B0D54D /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */; };
 		F4741BD519C55800AC104B77 /* NewPersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51BF8E4E3AC222C5D2FAA4F9 /* NewPersonView.swift */; };
+		F7B8C9DAE0F14C5D6E7F8091 /* OLMImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */; };
 		F828014B7935AE066B158FC7 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */; };
 		F8A9A850C82CA48FFE5ECF34 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5CED1E740986B30F62332F /* GoalsView.swift */; };
 		F917288A76F209C82D2A6F67 /* whisper_transcribe.py in Resources */ = {isa = PBXBuildFile; fileRef = 429920CE0AA2963935EB4FDB /* whisper_transcribe.py */; };
@@ -168,10 +169,6 @@
 		038D00229054740213C66535 /* IntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationService.swift; sourceTree = "<group>"; };
 		0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInsightsService.swift; sourceTree = "<group>"; };
 		0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMeetingView.swift; sourceTree = "<group>"; };
-		CF755155519D755A03D7FE0F /* EditMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMeetingView.swift; sourceTree = "<group>"; };
-		D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookWebImportView.swift; sourceTree = "<group>"; };
-		E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLMImportService.swift; sourceTree = "<group>"; };
-		F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLMImportView.swift; sourceTree = "<group>"; };
 		1315CF53BA9BE1DEB2FF6BC6 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		17AF636DDD4D792771AE0F8B /* OKR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKR.swift; sourceTree = "<group>"; };
 		23BD04B9BA820D820CB77AF8 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
@@ -217,15 +214,20 @@
 		BDC79224D0AC14B6C825145C /* CareerDevelopment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerDevelopment.swift; sourceTree = "<group>"; };
 		CC1097332AF67BEE0C63EAFB /* OneOnOneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOnOneWidget.swift; sourceTree = "<group>"; };
 		CF68E714811E26B19A231ABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CF755155519D755A03D7FE0F /* EditMeetingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMeetingView.swift; sourceTree = "<group>"; };
 		CFF68654B6E0064061062E0D /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemsView.swift; sourceTree = "<group>"; };
 		D4517F48E7C8CAE568A825CA /* OneOnOne_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneOnOne_Widget.entitlements; sourceTree = "<group>"; };
+		D522572603C75E282AD63371 /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<group>"; };
+		D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookWebImportView.swift; sourceTree = "<group>"; };
 		D8EC98E8254172A18F3FD76E /* OneOnOne-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OneOnOne-iOS.entitlements"; sourceTree = "<group>"; };
 		DD3AE0BD5CB67112935B95F2 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		E4F5A6B7C8D90A1B2C3D4E5F /* OLMImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLMImportService.swift; sourceTree = "<group>"; };
 		E5334EAB5A40BCB51624E6BA /* AIBackendStatusMenu.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AIBackendStatusMenu.swift; path = "OneOnOne Widget/AIBackendStatusMenu.swift"; sourceTree = "<group>"; };
 		E561DE74CEF4893A0CE0F63A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F42E9DBA6CEAF87B0F0F33B5 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
 		F58E4850AE87DD8616025749 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLMImportView.swift; sourceTree = "<group>"; };
 		F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationsView.swift; sourceTree = "<group>"; };
 		F85152DCACCCFD436EB19059 /* TeamInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInsightsView.swift; sourceTree = "<group>"; };
 		FF0E2D0D07A761375D9DEB8D /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				23BD04B9BA820D820CB77AF8 /* SyncService.swift */,
 				0ABE384506F5E04861F3F0FE /* TeamInsightsService.swift */,
 				9DD874F6E782B03E440F31B7 /* WidgetSyncService.swift */,
+				D522572603C75E282AD63371 /* NovaAPIServer.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -611,6 +614,7 @@
 				5428A963C9E0BE2C986C9EBE /* AIBackendManager+Generation.swift in Sources */,
 				9C459FA48B2C91EC7845015D /* AIBackendManager+Enhanced.swift in Sources */,
 				D51B5DCA94BC90B63CE02141 /* AIBackendStatusMenu.swift in Sources */,
+				7A67E6F5B8FE135A9BBCE73F /* NovaAPIServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -889,7 +893,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -971,7 +975,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

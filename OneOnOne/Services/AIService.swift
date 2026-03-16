@@ -329,6 +329,22 @@ class AIService: ObservableObject {
             .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "-* ")) }
     }
 
+    /// Summarizes an email for Nova, the OpenClaw AI assistant
+    func summarizeEmailForNova(content: String, context: String = "") async throws -> String {
+        let contextBlock = context.isEmpty ? "" : "Context: \(context)\n\n"
+        let prompt = """
+        You are summarizing an email for Jordan Koch's AI assistant Nova.
+
+        \(contextBlock)Email:
+        \(content)
+
+        Provide a concise summary (2-3 sentences) covering: who sent it, what they are communicating, and any action required from Jordan.
+
+        Summary:
+        """
+        return try await generate(prompt: prompt)
+    }
+
     /// Analyzes goal progress and provides recommendations
     func analyzeGoalProgress(goal: Goal, relatedMeetings: [Meeting]) async throws -> String {
         let milestoneStatus = goal.milestones.map { milestone in

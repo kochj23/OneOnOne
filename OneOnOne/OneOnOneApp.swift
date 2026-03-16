@@ -163,6 +163,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApplication.shared.registerForRemoteNotifications()
+        NovaAPIServer.shared.start()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        NovaAPIServer.shared.stop()
     }
 
     func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
