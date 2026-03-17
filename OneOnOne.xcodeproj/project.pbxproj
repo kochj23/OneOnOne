@@ -218,7 +218,7 @@
 		CFF68654B6E0064061062E0D /* PeopleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleView.swift; sourceTree = "<group>"; };
 		D0FD231A33855030EE2BC3E6 /* ActionItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemsView.swift; sourceTree = "<group>"; };
 		D4517F48E7C8CAE568A825CA /* OneOnOne_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneOnOne_Widget.entitlements; sourceTree = "<group>"; };
-		D522572603C75E282AD63371 /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<group>"; };
+		D522572603C75E282AD63371 /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "/Volumes/Data/xcode/OneOnOne/OneOnOne/Services/NovaAPIServer.swift"; sourceTree = "<group>"; };
 		D7A1B2C3E4F5061728394A5B /* OutlookWebImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlookWebImportView.swift; sourceTree = "<group>"; };
 		D8EC98E8254172A18F3FD76E /* OneOnOne-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "OneOnOne-iOS.entitlements"; sourceTree = "<group>"; };
 		DD3AE0BD5CB67112935B95F2 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
