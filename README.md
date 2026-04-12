@@ -1,270 +1,485 @@
 # OneOnOne
 
 ![Build](https://github.com/kochj23/OneOnOne/actions/workflows/build.yml/badge.svg)
+![Platform](https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20iOS%2017%2B-blue)
+![Swift](https://img.shields.io/badge/swift-5.9-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-**Never lose an action item again.** OneOnOne helps engineering managers run better 1:1s and team meetings with AI-generated summaries, agenda templates, and automatic action item tracking.
+A native macOS and iOS application for engineering managers who run 1:1s, team meetings, and performance reviews. OneOnOne combines meeting management, action item tracking, goal and OKR planning, career development, and AI-powered summaries into a single privacy-first tool. All AI inference runs locally on your Mac via Ollama, OpenWebUI, MLX, or TinyChat -- your data never leaves your machine.
 
-![OneOnOne Screenshot](screenshots/app-screenshot.png)
+Written by Jordan Koch.
 
-## Screenshots
+---
 
-*Additional screenshots coming soon -- showing the meeting dashboard, AI summary generation, and action item tracker.*
+## Architecture
 
-## Download
+```
++------------------------------------------------------------------+
+|                        OneOnOne.app                               |
+|                                                                   |
+|  +------------------+    +-------------------+    +-------------+ |
+|  |   SwiftUI Views  |    |    Services       |    |   Models    | |
+|  |                  |    |                   |    |             | |
+|  |  DashboardView   |    |  DataStore        |    |  Person     | |
+|  |  MeetingsView    |    |  AIService        |    |  Meeting    | |
+|  |  PeopleView      |    |  CloudKitService  |    |  ActionItem | |
+|  |  GoalsView       |    |  CalendarService  |    |  Goal       | |
+|  |  OKRView         |    |  SyncService      |    |  Objective  | |
+|  |  ActionItemsView |    |  RecordingService |    |  KeyResult  | |
+|  |  CareerView      |    |  IntegrationServ. |    |  Feedback   | |
+|  |  FeedbackView    |    |  TeamInsightsSvc  |    |  Skill      | |
+|  |  TeamInsightsView|    |  SearchService    |    |  Sentiment  | |
+|  |  AIInsightsView  |    |  WidgetSyncSvc    |    |  Recording  | |
+|  |  SettingsView    |    |  OLMImportService |    |  Template   | |
+|  +--------+---------+    +--------+----------+    +------+------+ |
+|           |                        |                      |       |
+|           +------------------------+----------------------+       |
+|                                    |                              |
+|  +---------------------+   +------+-------+   +--------------+   |
+|  | Nova API Server     |   | CloudKit     |   | WidgetKit    |   |
+|  | 127.0.0.1:37421     |   | iCloud Sync  |   | Extension    |   |
+|  | (macOS only)        |   | (all devices)|   | (macOS/iOS)  |   |
+|  +---------------------+   +--------------+   +--------------+   |
++------------------------------------------------------------------+
+         |                          |                    |
+         v                          v                    v
+  +-------------+         +----------------+     +-------------+
+  | OpenClaw /  |         | iCloud Private |     | Home Screen |
+  | Nova AI     |         | Database       |     | Widgets     |
+  +-------------+         +----------------+     +-------------+
+         |
+         v
+  +----------------------------------------------+
+  |          Local AI Backends (macOS)            |
+  |                                              |
+  |  Ollama (:11434)    OpenWebUI (:3000)        |
+  |  MLX Toolkit (:8800)  TinyChat (:8000)       |
+  +----------------------------------------------+
+```
 
-Download the latest release: [OneOnOne v2.7.0](https://github.com/kochj23/OneOnOne/releases/latest)
-
-Or build from source (see [Building from Source](#building-from-source) below).
-
-## Why OneOnOne?
-
-- **For Engineering Managers** -- Purpose-built for the specific workflow of managing 1:1s and team meetings
-- **AI-Powered Summaries** -- Automatically generate meeting summaries from your notes using local AI via MLX (Machine Learning eXtensions) or cloud providers
-- **Action Item Tracking** -- Never let a follow-up slip through the cracks
-- **Privacy-First** -- All data stored locally. AI runs on your machine with MLX models.
-- **Native macOS & iOS** -- Built with SwiftUI, not a web wrapper. Fast, lightweight, and beautiful.
-- **iCloud Sync** -- Seamlessly sync meetings, action items, and notes across all your Apple devices
-
-## Platforms
-
-- **macOS** 14.0+ (Apple Silicon: M1/M2/M3/M4) - Full feature set including AI
-- **iOS** 17.0+ (iPhone and iPad) - Core features with iCloud sync
+---
 
 ## Features
 
 ### Meeting Management
-- Track all your 1:1 and team meetings in one place
-- Support for multiple meeting types: 1:1, Team, Stand-up, Retrospective, Planning, Review, Brainstorm, Interview, Training
-- Record meeting notes, agendas, and outcomes
-- Automatic action item tracking from meetings
-- Decision logging with rationale
-- Meeting mood tracking (Productive, Challenging, Neutral, Positive, Tense)
+- Track 1:1s, team meetings, stand-ups, retrospectives, planning sessions, reviews, brainstorms, interviews, and training
+- Record agendas, free-form notes, and structured outcomes per meeting
+- Log decisions with rationale and participant attribution
+- Tag meetings and track mood (Productive, Challenging, Neutral, Positive, Tense)
 - Recurring meeting support with calendar integration
+- Outlook calendar import via OLM files and web import
 
 ### People Management
-- Maintain profiles for everyone you meet with
-- Track meeting frequency preferences (Daily, Weekly, Bi-weekly, Monthly, Quarterly, As Needed)
-- View complete meeting history per person
-- Custom tags and notes for each person
-- Meeting frequency alerts
+- Maintain profiles with name, title, department, email, and custom tags
+- Set meeting frequency preferences (Daily through Quarterly, or As Needed)
+- View complete meeting history per person with last-met and next-scheduled dates
+- Color-coded avatar initials
 
 ### Action Items
-- Central view of all action items across meetings
-- Priority levels (Low, Medium, High, Urgent)
-- Due date tracking with overdue alerts
-- Assignee management
+- Central cross-meeting action item dashboard
+- Priority levels: Low, Medium, High, Urgent
+- Due date tracking with overdue and due-soon alerts
+- Assignee management linked to person profiles
 - Filter by priority, assignee, or completion status
 
 ### Goal Tracking
-- Set and track goals for yourself and team members
-- Goal categories: Development, Performance, Learning, Project, Personal, Team, Career
-- Milestone tracking with completion progress
-- Link goals to related meetings
-- Goal status tracking (Not Started, In Progress, Completed, On Hold, Cancelled)
+- Categories: Development, Performance, Learning, Project, Personal, Team, Career
+- Milestone tracking with automatic progress calculation
+- Link goals to related meetings for context
+- Status: Not Started, In Progress, On Hold, Completed, Cancelled
 
-### OKR System (Objectives & Key Results)
+### OKR System (Objectives and Key Results)
 - Create objectives with measurable key results
-- Hierarchical/cascading OKRs
-- Team and individual OKR tracking
-- Quarterly planning support
-- Status tracking (On Track, At Risk, Off Track, Achieved, Cancelled)
+- Metric types: Increase, Decrease, Maintain, Binary (Yes/No)
+- Hierarchical/cascading OKRs at Company, Department, Team, and Individual levels
+- Quarterly planning with status tracking (On Track, At Risk, Behind, Achieved, Cancelled)
+- Key result update history with notes
 
 ### Career Development
-- Skill tracking with proficiency levels (Beginner, Intermediate, Advanced, Expert)
-- Skill categories: Technical, Leadership, Communication, Problem Solving, Collaboration, Domain Knowledge, Project Management
-- Target skill level setting and gap analysis
-- Skill assessment history
+- Skill tracking: Technical, Leadership, Communication, Problem Solving, Collaboration, Domain Knowledge, Project Management
+- Proficiency levels: Beginner, Intermediate, Advanced, Expert
+- Target skill level setting with gap analysis
+- Assessment history
 
 ### Feedback System
-- Comprehensive feedback collection per person
-- Feedback types: Praise, Recognition, Constructive, Achievement, Thanks, Milestone
-- Feedback direction tracking (Given/Received)
-- Monthly feedback aggregation and trends
+- Types: Praise, Recognition, Constructive, Achievement, Thanks, Milestone
+- Direction tracking (Given / Received)
+- Link feedback to meetings for context
+- Monthly aggregation and trend analysis
 
 ### Team Insights
-- Team-wide analytics and metrics
-- Cross-person patterns and trends
-- Relationship health scoring
-- Sentiment tracking (1-5 scale)
+- Relationship health scoring with trend analysis (Improving, Stable, Declining)
+- Sentiment tracking on a 1--5 scale
 - Risk factor identification
+- Cross-person pattern recognition
 
-### Search & Filtering
-- Full-text search across meetings, people, and goals
-- Advanced filtering capabilities
+### Search
+- Full-text search across meetings, people, goals, and action items
 - Search history
 
-### Data Portability & Sync
-- **iCloud Sync** - Automatic synchronization across all your devices via CloudKit
-- Export/Import data in JSON format
-- Automatic backups
-- Local data storage for privacy
+### Data Portability and Sync
+- iCloud sync via CloudKit with incremental change tokens
+- JSON export and import with merge (does not overwrite existing records)
+- Automatic local backups
+- All data persisted as JSON in Application Support/OneOnOne/
 
 ### AI-Powered Insights (macOS only)
-- **Meeting Summaries**: AI-generated summaries of meeting notes
-- **Weekly Recaps**: Automated summaries of your week
-- **Conversation Starters**: AI suggestions for upcoming 1:1s based on past discussions
-- **Action Item Extraction**: Automatically identify action items from notes
-- **Goal Analysis**: AI assessment of goal progress and recommendations
-
-### Nova API (macOS only — v2.7.0+)
-Local HTTP API on `127.0.0.1:37421` for AI assistant integration (e.g. OpenClaw/Nova):
-- `GET /api/status` — check if app is running
-- `GET /api/meetings?limit=N` — list recent meetings
-- `GET /api/meetings/{uuid}` — get a specific meeting
-- `GET /api/people` — list all people
-- `POST /api/summarize` — submit email/text content, receive AI summary
-- `POST /api/meetings/{uuid}/summary` — generate and save an AI summary for a meeting
+- Meeting summary generation from notes
+- Automatic action item extraction
+- Conversation starter suggestions based on meeting history
+- Weekly recaps across all meetings and open action items
+- Follow-up topic suggestions
+- Goal progress analysis with recommendations
+- Email summarization for Nova integration
+- Multi-backend support with automatic failover
 
 ### Calendar Integration (macOS and iOS)
-- Sync with system Calendar app
+- Sync with system Calendar.app
 - Create calendar events for meetings
 - Recurring meeting support
-- Find available meeting slots
+- Outlook calendar integration
 
-### Voice Recording & Transcription (macOS only)
-- Voice recording with consent tracking
-- Whisper-based transcription with timestamps
+### Voice Recording and Transcription (macOS only)
+- Audio recording with consent tracking
+- Whisper-based transcription via bundled Python script
 - Speaker diarization support
+- Recordings linked to meetings
 
-### Widget (macOS and iOS)
-- **Home Screen Widget** with Small, Medium, and Large sizes
-- View upcoming meetings at a glance
-- Track overdue action items count
-- See people you need to meet with soon
-- Quick access to the app with meeting context
-- Automatic sync when app data changes
-- Configurable display options
+### Third-Party Integrations (macOS only)
+- Slack webhook integration for sharing meeting summaries
+- Microsoft Teams webhook integration
 
-## Platform Feature Comparison
+### WidgetKit Extension (macOS and iOS)
+- Small, Medium, and Large widget sizes
+- Upcoming meetings at a glance
+- Overdue action item count
+- People due for a meeting
+- Automatic refresh when app data changes
+- App Group data sharing between app and widget
+
+### Design
+- Glassmorphic dark-mode UI with navy gradient backgrounds
+- Animated floating blobs
+- Frosted glass panels
+- Vibrant accent palette: cyan, purple, pink, orange, green
+- Consistent with the MLXCode design system
+
+---
+
+## Platform Feature Matrix
 
 | Feature | macOS | iOS |
-|---------|-------|-----|
-| Meeting Management | ✅ | ✅ |
-| People Management | ✅ | ✅ |
-| Action Items | ✅ | ✅ |
-| Goals & OKRs | ✅ | ✅ |
-| Career Development | ✅ | ✅ |
-| Feedback System | ✅ | ✅ |
-| Team Insights | ✅ | ✅ |
-| iCloud Sync | ✅ | ✅ |
-| Calendar Integration | ✅ | ✅ |
-| Home Screen Widget | ✅ | ✅ |
-| AI Insights | ✅ | ❌ |
-| Voice Recording | ✅ | ❌ |
-| Transcription | ✅ | ❌ |
-| Third-party Integrations | ✅ | ❌ |
+|---|:---:|:---:|
+| Meeting Management | Yes | Yes |
+| People Management | Yes | Yes |
+| Action Items | Yes | Yes |
+| Goals and OKRs | Yes | Yes |
+| Career Development | Yes | Yes |
+| Feedback System | Yes | Yes |
+| Team Insights | Yes | Yes |
+| iCloud Sync | Yes | Yes |
+| Calendar Integration | Yes | Yes |
+| WidgetKit Widgets | Yes | Yes |
+| AI Insights | Yes | -- |
+| Voice Recording | Yes | -- |
+| Transcription | Yes | -- |
+| Slack/Teams Integration | Yes | -- |
+| Nova API Server | Yes | -- |
 
-## AI Models (macOS)
+---
 
-OneOnOne uses local MLX models for all AI features, ensuring your meeting data never leaves your computer. Supported models include:
-- Llama 3.2 3B Instruct (recommended)
-- Qwen 2.5
-- Mistral
-- Phi-3.5
+## Nova API Server
 
-## Requirements
+OneOnOne exposes a local HTTP API on `127.0.0.1:37421` for integration with Nova (OpenClaw AI assistant) and other local tools. The server starts automatically when the macOS app launches and binds to the loopback interface only -- there is no external network exposure.
 
-### macOS
-- macOS 14.0 or later
-- Apple Silicon Mac (M1/M2/M3/M4)
-- For AI features: MLX and mlx-lm Python packages
+### Endpoints
 
-### iOS
-- iOS 17.0 or later
-- iPhone or iPad
-- iCloud account for sync
+#### GET /api/status
+
+Returns app status, name, version, and port.
+
+```bash
+curl -s http://127.0.0.1:37421/api/status
+```
+
+```json
+{
+  "status": "running",
+  "app": "OneOnOne",
+  "version": "1.0",
+  "port": "37421"
+}
+```
+
+#### GET /api/meetings?limit=N
+
+Returns the N most recent meetings sorted by date descending. Default limit is 20.
+
+```bash
+curl -s http://127.0.0.1:37421/api/meetings?limit=5
+```
+
+#### GET /api/meetings/{uuid}
+
+Returns a single meeting by UUID, including notes, action items, decisions, and follow-ups.
+
+```bash
+curl -s http://127.0.0.1:37421/api/meetings/550e8400-e29b-41d4-a716-446655440000
+```
+
+Returns 400 for invalid UUIDs, 404 if not found.
+
+#### GET /api/people
+
+Returns all people profiles.
+
+```bash
+curl -s http://127.0.0.1:37421/api/people
+```
+
+#### POST /api/summarize
+
+Submits text content (such as an email) and returns an AI-generated summary. Requires a JSON body with a `content` field. An optional `context` field provides additional context for the summary.
+
+```bash
+curl -s -X POST http://127.0.0.1:37421/api/summarize \
+  -H "Content-Type: application/json" \
+  -d '{"content": "Full email body here", "context": "Q1 planning thread"}'
+```
+
+```json
+{
+  "summary": "AI-generated summary text..."
+}
+```
+
+Returns 400 if `content` is missing or empty, 500 if the AI backend is unavailable.
+
+#### POST /api/meetings/{uuid}/summary
+
+Generates an AI summary for a specific meeting's notes and saves it to the meeting record.
+
+```bash
+curl -s -X POST http://127.0.0.1:37421/api/meetings/550e8400-e29b-41d4-a716-446655440000/summary
+```
+
+```json
+{
+  "summary": "Generated summary text...",
+  "meetingId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+Returns 404 if meeting not found, 422 if meeting has no notes, 500 if AI generation fails.
+
+### Error Responses
+
+All errors return JSON with an `error` field:
+
+```json
+{
+  "error": "Description of what went wrong"
+}
+```
+
+### Authentication
+
+The API runs on loopback only (`127.0.0.1`) and requires no authentication for local macOS requests. iOS requests require an `X-Nova-Token` header.
+
+---
+
+## AI Backends
+
+OneOnOne supports four local AI backends. The app probes each on startup and automatically selects the first available provider. You can switch providers in Settings.
+
+| Backend | Default Endpoint | Protocol |
+|---|---|---|
+| Ollama | http://localhost:11434 | Ollama native API |
+| OpenWebUI | http://localhost:3000 | OpenAI-compatible |
+| MLX Toolkit | http://localhost:8800 | OpenAI-compatible |
+| TinyChat | http://localhost:8000 | OpenAI-compatible |
+
+All endpoints, models, and the selected provider are configurable in the app's Settings view and persisted in UserDefaults.
+
+**Bundled Python scripts** (macOS only, in the `Python/` directory):
+- `ai_daemon.py` -- MLX-based local inference daemon
+- `whisper_transcribe.py` -- Whisper-based audio transcription
+
+---
 
 ## Installation
 
-### macOS
-Download the DMG (Disk Image) from the releases page and drag OneOnOne to your Applications folder.
+### macOS (recommended)
+
+Download the DMG from the [latest release](https://github.com/kochj23/OneOnOne/releases/latest) and drag OneOnOne.app to your Applications folder.
+
+OneOnOne is distributed directly via DMG. It is not available on the Mac App Store. The app runs without sandbox restrictions so it can access local AI backends, voice recording hardware, and the full file system.
 
 ### iOS
-Install from the App Store or TestFlight (coming soon).
 
-### Setting up AI Features (macOS)
+Install via TestFlight or build from source.
 
-To use AI features, install the required Python packages:
+### Setting Up AI Features (macOS)
+
+1. Install a local AI backend. Ollama is the simplest:
+
+```bash
+brew install ollama
+ollama pull llama3.2
+ollama serve
+```
+
+2. Launch OneOnOne. It will detect Ollama automatically.
+
+Alternatively, if you already run OpenWebUI, MLX Toolkit (mlx_lm.server), or TinyChat, OneOnOne will detect and use those.
+
+For the bundled MLX daemon and Whisper transcription:
 
 ```bash
 pip3 install mlx mlx-lm
+pip3 install huggingface-hub openai-whisper
+huggingface-cli download mlx-community/Llama-3.2-3B-Instruct-4bit \
+  --local-dir ~/.mlx/models/Llama-3.2-3B-Instruct-4bit
 ```
 
-Then download a model:
+### iCloud Sync Setup
 
-```bash
-pip3 install huggingface-hub
-huggingface-cli download mlx-community/Llama-3.2-3B-Instruct-4bit --local-dir ~/.mlx/models/Llama-3.2-3B-Instruct-4bit
-```
+1. Sign in to iCloud on all devices.
+2. Enable iCloud for OneOnOne in System Settings (macOS) or Settings (iOS).
+3. Data syncs automatically in the background using CloudKit with incremental change tokens.
 
-## iCloud Sync
+Synced data: People, Meetings, Action Items, Goals, OKRs, Feedback, Career Profiles, Sentiment History, Recordings metadata.
 
-OneOnOne uses CloudKit to sync your data across all your Apple devices:
-
-1. Sign in to iCloud on all devices
-2. Enable iCloud for OneOnOne in Settings
-3. Data syncs automatically in the background
-
-**Sync includes:**
-- People profiles
-- Meetings and notes
-- Action items
-- Goals and OKRs
-- Feedback entries
-
-## Design
-
-OneOnOne features a modern glassmorphic design with:
-- Dark navy gradient backgrounds
-- Floating animated blobs
-- Frosted glass UI elements
-- Vibrant accent colors (cyan, purple, pink, orange, green)
-
-The design matches other apps like MLX Code for a consistent experience.
-
-## Privacy
-
-- All your meeting data is stored locally on your device
-- iCloud sync is encrypted end-to-end
-- AI features (macOS) run entirely on your device using MLX - no data is sent to external servers
-- Calendar access is used only to create and sync meeting events
+---
 
 ## Building from Source
 
-```bash
-# Install XcodeGen
-brew install xcodegen
+### Requirements
 
-# Generate Xcode project
+- macOS 14.0+ with Xcode 15+
+- Apple Silicon (M1/M2/M3/M4) for AI features
+- XcodeGen for project generation
+
+### Build
+
+```bash
+brew install xcodegen
 cd /path/to/OneOnOne
 xcodegen generate
 
-# Build macOS
+# macOS
 xcodebuild -scheme OneOnOne -configuration Release
 
-# Build iOS
-xcodebuild -scheme OneOnOne-iOS -configuration Release -destination 'generic/platform=iOS'
+# iOS
+xcodebuild -scheme OneOnOne-iOS -configuration Release \
+  -destination 'generic/platform=iOS'
 ```
+
+### Targets
+
+| Target | Platform | Bundle ID |
+|---|---|---|
+| OneOnOne | macOS 14.0+ | com.jordankoch.OneOnOne |
+| OneOnOne-iOS | iOS 17.0+ | com.jordankoch.OneOnOne |
+| OneOnOneWidget-macOS | macOS 14.0+ | com.jordankoch.OneOnOne.Widget |
+| OneOnOneWidget-iOS | iOS 17.0+ | com.jordankoch.OneOnOne.Widget |
+
+---
+
+## Technical Details
+
+### Data Storage
+
+All data is stored as JSON files in `~/Library/Application Support/OneOnOne/`:
+
+| File | Contents |
+|---|---|
+| people.json | Person profiles |
+| meetings.json | Meetings with embedded action items, decisions, follow-ups |
+| goals.json | Goals with milestones |
+| objectives.json | OKRs with key results and update history |
+| feedback.json | Feedback entries |
+| career_profiles.json | Skill inventories keyed by person UUID |
+| sentiment.json | Sentiment history keyed by person UUID |
+| templates.json | Meeting templates (built-in and custom) |
+| recordings.json | Recording metadata |
+| integrations.json | Slack and Teams webhook configuration |
+
+Voice recordings are stored in `~/Library/Application Support/OneOnOne/Recordings/`.
+
+### Sync Architecture
+
+- **iCloud**: CloudKit private database with a custom record zone. Incremental sync via server change tokens. Debounced push on local saves. Remote notification subscription (`OneOnOne-Changes`) triggers pull on other devices.
+- **Widget**: App Group shared container with `WidgetSyncService` pushing data to the widget extension. Widget refreshes automatically on data changes.
+
+### Key Frameworks
+
+- SwiftUI (UI layer, all platforms)
+- CloudKit (iCloud sync)
+- Network.framework (Nova API server via NWListener)
+- AVFoundation (voice recording, macOS)
+- EventKit (calendar integration)
+- WidgetKit (home screen widgets)
+
+### Keyboard Shortcuts (macOS)
+
+| Shortcut | Action |
+|---|---|
+| Cmd+N | New Meeting |
+| Cmd+Shift+N | New Person |
+| Cmd+Shift+G | New Goal |
+| Cmd+Shift+E | Export Data |
+| Cmd+Shift+I | Import Data |
+| Cmd+Option+S | Sync with iCloud |
+
+---
+
+## Privacy
+
+- All meeting data is stored locally on your device.
+- iCloud sync uses end-to-end encrypted CloudKit private database.
+- AI features run entirely on your machine -- no data is sent to external servers.
+- Calendar access is used only to create and sync meeting events.
+- Voice recordings are stored locally and never uploaded.
+- The Nova API server binds to 127.0.0.1 only.
+
+---
 
 ## Version History
 
+### v2.7.0
+- Nova API server on port 37421 for OpenClaw integration
+- POST /api/summarize endpoint for email summarization
+- POST /api/meetings/{uuid}/summary for AI meeting summary generation
+
+### v2.2.0
+- Multi-backend AI support (Ollama, OpenWebUI, MLX Toolkit, TinyChat)
+- Automatic backend detection and failover
+- Outlook calendar integration (OLM import, web import)
+
 ### v2.1.0
-- Added WidgetKit widget extension (Small, Medium, Large sizes)
-- Widget shows upcoming meetings, overdue action items, and people to meet
-- App Group support for widget data sharing
-- Automatic widget refresh when app data changes
+- WidgetKit extension (Small, Medium, Large sizes)
+- App Group data sharing for widget
+- Automatic widget refresh
 
 ### v2.0.0
-- Added iOS support
-- Added iCloud sync via CloudKit
+- iOS support
+- iCloud sync via CloudKit
 - Cross-platform synchronization
-- Improved navigation for mobile devices
 
 ### v1.1.0
-- Initial macOS release
-- Full AI-powered insights
+- AI-powered insights (meeting summaries, action item extraction, weekly recaps)
 - Calendar integration
-- Voice recording and transcription
+- Voice recording and Whisper transcription
+
+### v1.0.0
+- Initial macOS release
+- Meeting, people, goal, and action item management
+- Feedback and career development tracking
+- OKR system
+- Team insights and sentiment tracking
+
+---
 
 ## License
 
@@ -272,67 +487,46 @@ MIT License
 
 Copyright (c) 2026 Jordan Koch
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
 
 ## Author
 
-Jordan Koch
+Written by Jordan Koch ([kochj23](https://github.com/kochj23)).
 
 ---
 
 ## More Apps by Jordan Koch
 
 | App | Description |
-|-----|-------------|
+|---|---|
+| [MLXCode](https://github.com/kochj23/MLXCode) | Local AI coding assistant for Apple Silicon |
+| [NMAPScanner](https://github.com/kochj23/NMAPScanner) | Network scanning and host discovery tool |
+| [RsyncGUI](https://github.com/kochj23/RsyncGUI) | macOS GUI for rsync backup and sync |
 | [JiraSummary](https://github.com/kochj23/JiraSummary) | AI-powered Jira dashboard with sprint analytics |
 | [MailSummary](https://github.com/kochj23/MailSummary) | AI-powered email categorization and summarization |
 | [ExcelExplorer](https://github.com/kochj23/ExcelExplorer) | Native macOS Excel/CSV file viewer |
 | [TopGUI](https://github.com/kochj23/TopGUI) | macOS system monitor with real-time metrics |
-| [MLXCode](https://github.com/kochj23/MLXCode) | Local AI coding assistant for Apple Silicon |
 
-> **[View all projects](https://github.com/kochj23?tab=repositories)**
+[View all projects](https://github.com/kochj23?tab=repositories)
 
 ---
 
-> **Disclaimer:** This is a personal project created on my own time. It is not affiliated with, endorsed by, or representative of my employer.
-
-## Nova / Claude API Integration
-
-This app exposes a local HTTP API on port **37421** for integration with [Nova](https://github.com/kochj23) (OpenClaw AI) and Claude Code.
-
-**Platform:** macOS / iOS  
-**Auth:** `X-Nova-Token` header required for iOS requests.
-
-### Standard Endpoints
-
-```bash
-curl http://127.0.0.1:37421/api/status   # App status + uptime
-curl http://127.0.0.1:37421/api/ping     # Health check
-```
-
-### App-Specific Endpoints
-
-```
-/api/meetings
-/api/people
-/api/meetings/:id
-/api/summarize (POST)
-/api/meetings/:id/summary (POST)
-```
-
-### Usage Example
-
-```bash
-# Check if running
-curl -s http://127.0.0.1:37421/api/status | python3 -m json.tool
-
-# From Nova (OpenClaw TUI)
-# Nova has this pre-authorized and will use these endpoints automatically
-```
-
-The API server starts automatically when the app launches and binds to loopback only — no external network exposure.
-
+> Disclaimer: This is a personal project created on my own time. It is not affiliated with, endorsed by, or representative of my employer.
