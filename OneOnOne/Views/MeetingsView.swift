@@ -520,14 +520,7 @@ struct MeetingDetailView: View {
             }
 
             if isEditingNotes {
-                TextEditor(text: $meeting.notes)
-                    .font(.system(size: 14))
-                    .foregroundColor(ModernColors.textPrimary)
-                    .scrollContentBackground(.hidden)
-                    .frame(minHeight: 200)
-                    .padding(12)
-                    .background(Color.white.opacity(0.05))
-                    .cornerRadius(12)
+                RichNotesEditor(text: $meeting.notes)
             } else {
                 if meeting.notes.isEmpty {
                     Text("No notes yet. Click Edit to add notes.")
@@ -535,9 +528,7 @@ struct MeetingDetailView: View {
                         .foregroundColor(ModernColors.textTertiary)
                         .italic()
                 } else {
-                    Text(meeting.notes)
-                        .font(.system(size: 14))
-                        .foregroundColor(ModernColors.textPrimary)
+                    MarkdownNotesView(meeting.notes)
                 }
             }
 

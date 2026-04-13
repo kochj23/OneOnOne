@@ -239,6 +239,7 @@ struct PersonDetailView: View {
     @Binding var person: Person
     @EnvironmentObject var dataStore: DataStore
     @State private var showDeleteConfirmation = false
+    @State private var isEditingNotes = false
 
     var meetings: [Meeting] {
         dataStore.meetings(for: person.id)
@@ -565,20 +566,37 @@ struct PersonDetailView: View {
 
     private var notesCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Notes")
-                .modernHeader(size: .small)
+            HStack {
+                Text("Notes")
+                    .modernHeader(size: .small)
 
-            TextEditor(text: Binding(
-                get: { person.notes ?? "" },
-                set: { person.notes = $0.isEmpty ? nil : $0 }
-            ))
-            .font(.system(size: 14))
-            .foregroundColor(ModernColors.textPrimary)
-            .scrollContentBackground(.hidden)
-            .frame(minHeight: 100)
-            .padding(12)
-            .background(Color.white.opacity(0.05))
-            .cornerRadius(12)
+                Spacer()
+
+                Button {
+                    isEditingNotes.toggle()
+                } label: {
+                    Text(isEditingNotes ? "Done" : "Edit")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(ModernColors.accent)
+                }
+                .buttonStyle(.plain)
+            }
+
+            if isEditingNotes {
+                RichNotesEditor(text: Binding(
+                    get: { person.notes ?? "" },
+                    set: { person.notes = $0.isEmpty ? nil : $0 }
+                ), minHeight: 100)
+            } else {
+                if let notes = person.notes, !notes.isEmpty {
+                    MarkdownNotesView(notes)
+                } else {
+                    Text("No notes yet. Click Edit to add notes.")
+                        .font(.system(size: 14))
+                        .foregroundColor(ModernColors.textTertiary)
+                        .italic()
+                }
+            }
         }
         .glassCard()
     }

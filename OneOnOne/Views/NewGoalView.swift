@@ -39,14 +39,7 @@ struct NewGoalView: View {
 
                     // Description
                     formSection(title: "Description") {
-                        TextEditor(text: $description)
-                            .font(.system(size: 14))
-                            .foregroundColor(ModernColors.textPrimary)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 80)
-                            .padding(12)
-                            .background(Color.white.opacity(0.05))
-                            .cornerRadius(10)
+                        RichNotesEditor(text: $description, minHeight: 80)
                     }
 
                     // Category

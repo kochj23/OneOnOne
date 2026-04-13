@@ -181,14 +181,7 @@ struct NewPersonView: View {
 
                     // Notes
                     formSection(title: "Notes") {
-                        TextEditor(text: $notes)
-                            .font(.system(size: 14))
-                            .foregroundColor(ModernColors.textPrimary)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 80)
-                            .padding(12)
-                            .background(Color.white.opacity(0.05))
-                            .cornerRadius(10)
+                        RichNotesEditor(text: $notes, minHeight: 80)
                     }
                 }
                 .padding(32)

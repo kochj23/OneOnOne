@@ -24,6 +24,7 @@
 		23F5067858BCC6032D34491E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561DE74CEF4893A0CE0F63A /* SettingsView.swift */; };
 		255CA071D00663D78FB89F08 /* PeopleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF68654B6E0064061062E0D /* PeopleView.swift */; };
 		2771781ADE432F697E037763 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B6D18D72535ABF30159519 /* MeetingsView.swift */; };
+		BB11CC22DD33EE44FF55AA66 /* MarkdownComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF66 /* MarkdownComponents.swift */; };
 		2D4335CDCB9B1788C9680477 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D943A2964A91874A193C966 /* ModernDesign.swift */; };
 		315FCDD5F365F07868712C50 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284AD5CAD6AC79A36037E254 /* AIInsightsView.swift */; };
 		319732CD46513B79C4E94BCF /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = B153A3AB29A3262EFDEC0567 /* Person.swift */; };
@@ -54,6 +55,7 @@
 		6AEF37D8426389A5DD20499F /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369280E760FB6F801B312C83 /* SearchService.swift */; };
 		6B45E4F059B95187B232EB2D /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94323C60AACD636CE2E2C34E /* RecordingsView.swift */; };
 		6C02E2AB51F4D28E7B9F4054 /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B6D18D72535ABF30159519 /* MeetingsView.swift */; };
+		CC11DD22EE33FF44AA55BB66 /* MarkdownComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF66 /* MarkdownComponents.swift */; };
 		6D2FBA0200D3395BB1FD78FA /* IntegrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038D00229054740213C66535 /* IntegrationService.swift */; };
 		6DAC6516D5E9A62B414B021A /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94323C60AACD636CE2E2C34E /* RecordingsView.swift */; };
 		6E374587DDFEF7235C4E321D /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9AF23E1C843F18347B7EC5 /* CloudKitService.swift */; };
@@ -208,6 +210,7 @@
 		A8BF148153F2CDDB3A18BB86 /* OneOnOneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOnOneApp.swift; sourceTree = "<group>"; };
 		AA5CED1E740986B30F62332F /* GoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsView.swift; sourceTree = "<group>"; };
 		B153A3AB29A3262EFDEC0567 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF66 /* MarkdownComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownComponents.swift; sourceTree = "<group>"; };
 		B4B6D18D72535ABF30159519 /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		BB83E3CA9D03162B87E6C4AF /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		BD52A3F7226C7BBEE07D51B8 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
@@ -343,6 +346,7 @@
 				F6A7B8C9DAE03B4C5D6E7F81 /* OLMImportView.swift */,
 				AA5CED1E740986B30F62332F /* GoalsView.swift */,
 				F7ECE05BDD3C75E3A2BF2B33 /* IntegrationsView.swift */,
+				AA11BB22CC33DD44EE55FF66 /* MarkdownComponents.swift */,
 				B4B6D18D72535ABF30159519 /* MeetingsView.swift */,
 				A5F091BF5341F7E20CA66863 /* NewGoalView.swift */,
 				0E7A2BEC9AFBD81483F889CD /* NewMeetingView.swift */,
@@ -587,6 +591,7 @@
 				E5F6A7B8C9DA2B3C5D6E7F80 /* OLMImportView.swift in Sources */,
 				C3D4E5F6A7B80919384A5B6C /* OLMImportService.swift in Sources */,
 				17B8894C30EF67C70A077050 /* Meeting.swift in Sources */,
+				BB11CC22DD33EE44FF55AA66 /* MarkdownComponents.swift in Sources */,
 				2771781ADE432F697E037763 /* MeetingsView.swift in Sources */,
 				2D4335CDCB9B1788C9680477 /* ModernDesign.swift in Sources */,
 				C8FABB3D7803A54BB2994DEE /* NewGoalView.swift in Sources */,
@@ -644,6 +649,7 @@
 				F7B8C9DAE0F14C5D6E7F8091 /* OLMImportView.swift in Sources */,
 				D4E5F6A7B8C91A2B4C5D6E7F /* OLMImportService.swift in Sources */,
 				348FBA114B2B1BF410E50BDC /* Meeting.swift in Sources */,
+				CC11DD22EE33FF44AA55BB66 /* MarkdownComponents.swift in Sources */,
 				6C02E2AB51F4D28E7B9F4054 /* MeetingsView.swift in Sources */,
 				7FAF12F66AD08EB83D2A6B99 /* ModernDesign.swift in Sources */,
 				5439EBC17514386AFE0EBBE6 /* NewGoalView.swift in Sources */,
@@ -893,7 +899,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -908,7 +914,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.6.0;
+				MARKETING_VERSION = 2.8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -975,7 +981,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QRRCB8HB3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -996,7 +1002,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.6.0;
+				MARKETING_VERSION = 2.8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

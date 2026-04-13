@@ -140,14 +140,7 @@ struct NewMeetingView: View {
 
                     // Agenda
                     formSection(title: "Agenda (Optional)") {
-                        TextEditor(text: $agenda)
-                            .font(.system(size: 14))
-                            .foregroundColor(ModernColors.textPrimary)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 100)
-                            .padding(12)
-                            .background(Color.white.opacity(0.05))
-                            .cornerRadius(10)
+                        RichNotesEditor(text: $agenda, minHeight: 100)
                     }
 
                     // Recurring

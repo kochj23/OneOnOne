@@ -70,7 +70,13 @@ class CloudKitService: ObservableObject {
     // MARK: - Initialization
 
     private init() {
-        setupContainer()
+        // Defer container setup to after the run loop starts.
+        // On macOS 26, CKContainer(identifier:) traps with brk 1 if called
+        // synchronously during SwiftUI @StateObject initialization (scene construction
+        // phase), before applicationDidFinishLaunching completes.
+        Task { @MainActor in
+            self.setupContainer()
+        }
     }
 
     private func setupContainer() {

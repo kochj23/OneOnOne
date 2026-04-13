@@ -459,10 +459,7 @@ struct FeedbackDetailView: View {
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(ModernColors.textSecondary)
 
-                            Text(feedback.content)
-                                .font(.system(size: 15))
-                                .foregroundColor(ModernColors.textPrimary)
-                                .lineSpacing(4)
+                            MarkdownNotesView(feedback.content, fontSize: 15)
                         }
                         .padding(16)
                         .glassCard()
@@ -641,13 +638,7 @@ struct NewFeedbackView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Feedback")
                                 .formLabel()
-                            TextEditor(text: $content)
-                                .font(.system(size: 14))
-                                .frame(height: 120)
-                                .scrollContentBackground(.hidden)
-                                .padding(12)
-                                .background(Color.white.opacity(0.05))
-                                .cornerRadius(12)
+                            RichNotesEditor(text: $content, minHeight: 120)
                         }
 
                         // Context

@@ -290,16 +290,10 @@ struct CareerDetailView: View {
                     Text("Career Goals")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(ModernColors.textTertiary)
-                    TextEditor(text: Binding(
+                    RichNotesEditor(text: Binding(
                         get: { profile?.careerGoals ?? "" },
                         set: { profile?.careerGoals = $0; saveProfile() }
-                    ))
-                    .font(.system(size: 14))
-                    .frame(height: 80)
-                    .scrollContentBackground(.hidden)
-                    .padding(12)
-                    .background(Color.white.opacity(0.05))
-                    .cornerRadius(12)
+                    ), minHeight: 80)
                 }
             }
         }
