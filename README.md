@@ -31,6 +31,14 @@ Written by Jordan Koch.
 |  |  TeamInsightsView|    |  SearchService    |    |  Sentiment  | |
 |  |  AIInsightsView  |    |  WidgetSyncSvc    |    |  Recording  | |
 |  |  SettingsView    |    |  OLMImportService |    |  Template   | |
+|  |                  |    |                   |    |             | |
+|  |  +-- Markdown Components --+              |    |             | |
+|  |  | MarkdownNotesView      |              |    |             | |
+|  |  | CodeBlockView          |              |    |             | |
+|  |  | FormattingToolbar      |              |    |             | |
+|  |  | RichNotesEditor        |              |    |             | |
+|  |  | InlineMarkdownText     |              |    |             | |
+|  |  +------------------------+              |    |             | |
 |  +--------+---------+    +--------+----------+    +------+------+ |
 |           |                        |                      |       |
 |           +------------------------+----------------------+       |
@@ -157,6 +165,91 @@ Written by Jordan Koch.
 - Automatic refresh when app data changes
 - App Group data sharing between app and widget
 
+### Markdown & Code Snippets
+
+OneOnOne supports Slack-style markdown formatting across all text areas. Notes are stored as plain strings (no migration required) and rendered with rich formatting in view mode.
+
+**Code blocks** with optional language labels:
+
+````
+```sql
+SELECT name, last_meeting
+FROM people
+WHERE meeting_overdue = true;
+```
+````
+
+**Formatting toolbar** provides one-tap insertion of all syntax elements:
+
+```
++------+--------+-------+---+----------+--------+
+|  B   |   I    |  </>  | | |   { }    |   *    |
+| Bold | Italic | Code  |   | Block    | Bullet |
++------+--------+-------+---+----------+--------+
+```
+
+**Supported syntax:**
+
+| Syntax | Renders As |
+|---|---|
+| `**text**` | **Bold** |
+| `*text*` | *Italic* |
+| `` `code` `` | Inline code (cyan monospace with background) |
+| ```` ``` ```` | Fenced code block with copy button |
+| ```` ```swift ```` | Code block with language label |
+| `- item` or `* item` | Bullet list with accent-colored bullets |
+
+**Code block features:**
+- Language label badge (top-left corner)
+- Copy-to-clipboard button with animated checkmark feedback
+- Horizontal scroll for long lines
+- Monospace font on dark glass background
+- Text selection enabled
+
+**Applied across all text areas:**
+
+| View | Edit Mode | View Mode |
+|---|:---:|:---:|
+| Meeting Notes | Toolbar + Editor | Markdown Renderer |
+| Person Notes | Toolbar + Editor | Markdown Renderer |
+| Feedback | Toolbar + Editor | Markdown Renderer |
+| Meeting Agenda | Toolbar + Editor | -- |
+| Goal Description | Toolbar + Editor | -- |
+| Career Goals | Toolbar + Editor | -- |
+
+**Rendering pipeline:**
+
+```
+                     Plain String (stored in JSON)
+                              |
+                              v
+                   +--------------------+
+                   |  MarkdownParser    |
+                   |  (block-level)     |
+                   +----+-------+-------+
+                        |       |       |
+                   text |  code |  list |
+                        v       v       v
+             +----------+ +----------+ +-----------+
+             | Inline   | | CodeBlock| | Bullet    |
+             | Markdown | | View     | | List      |
+             | Text     | |          | | View      |
+             +----------+ +----------+ +-----------+
+                  |            |             |
+                  |   +--------+--------+    |
+                  |   | Language label  |    |
+                  |   | Copy button    |    |
+                  |   | Monospace text  |    |
+                  |   +----------------+    |
+                  v                         v
+        AttributedString          Accent-colored
+        (markdown: ...)           bullet points
+           |
+           +-- **bold** --> .bold weight
+           +-- *italic* --> .italic trait
+           +-- `code` --> cyan monospace + background
+```
+
 ### Design
 - Glassmorphic dark-mode UI with navy gradient backgrounds
 - Animated floating blobs
@@ -176,6 +269,7 @@ Written by Jordan Koch.
 | Goals and OKRs | Yes | Yes |
 | Career Development | Yes | Yes |
 | Feedback System | Yes | Yes |
+| Markdown & Code Snippets | Yes | Yes |
 | Team Insights | Yes | Yes |
 | iCloud Sync | Yes | Yes |
 | Calendar Integration | Yes | Yes |
@@ -415,6 +509,7 @@ Voice recordings are stored in `~/Library/Application Support/OneOnOne/Recording
 ### Key Frameworks
 
 - SwiftUI (UI layer, all platforms)
+- Foundation `AttributedString(markdown:)` (inline markdown rendering)
 - CloudKit (iCloud sync)
 - Network.framework (Nova API server via NWListener)
 - AVFoundation (voice recording, macOS)
@@ -446,6 +541,15 @@ Voice recordings are stored in `~/Library/Application Support/OneOnOne/Recording
 ---
 
 ## Version History
+
+### v2.8.0
+- Slack-style markdown rendering in all text areas (meeting notes, person notes, feedback, agendas, goals, career goals)
+- Fenced code blocks with language labels and copy-to-clipboard button
+- Inline code, bold, italic, and bullet list rendering
+- Formatting toolbar with one-tap syntax insertion (Bold, Italic, Code, Code Block, Bullet List)
+- New reusable components: MarkdownNotesView, CodeBlockView, FormattingToolbar, RichNotesEditor, InlineMarkdownText
+- Person notes now have edit/view toggle (was always-edit before)
+- Fix: CloudKitService deferred initialization to prevent crash on macOS 26
 
 ### v2.7.0
 - Nova API server on port 37421 for OpenClaw integration
