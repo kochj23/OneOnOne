@@ -10,6 +10,7 @@
 //
 
 import Foundation
+import Security
 import SwiftUI
 import AuthenticationServices
 import CryptoKit
@@ -248,6 +249,10 @@ class OutlookCalendarService: NSObject, ObservableObject {
         calendars = []
         selectedCalendarId = nil
         lastSyncDate = nil
+
+        // Remove tokens from Keychain
+        deleteFromKeychain(key: "outlook_access_token")
+        deleteFromKeychain(key: "outlook_refresh_token")
 
         // Remove config file
         try? FileManager.default.removeItem(at: configFile)
@@ -666,14 +671,66 @@ class OutlookCalendarService: NSObject, ObservableObject {
             .replacingOccurrences(of: "=", with: "")
     }
 
+    // MARK: - Keychain Helpers
+
+    private let keychainService = "com.jordankoch.OneOnOne.Outlook"
+
+    private func saveToKeychain(key: String, value: String) {
+        guard let data = value.data(using: .utf8) else { return }
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService
+        ]
+        SecItemDelete(query as CFDictionary)
+        guard !value.isEmpty else { return }
+        var addQuery = query
+        addQuery[kSecValueData as String] = data
+        SecItemAdd(addQuery as CFDictionary, nil)
+    }
+
+    private func loadFromKeychain(key: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private func deleteFromKeychain(key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+
     // MARK: - Configuration Persistence
 
     func saveConfiguration() {
+        // Store tokens securely in macOS Keychain — never in plaintext JSON
+        if let token = accessToken {
+            saveToKeychain(key: "outlook_access_token", value: token)
+        } else {
+            deleteFromKeychain(key: "outlook_access_token")
+        }
+        if let token = refreshToken {
+            saveToKeychain(key: "outlook_refresh_token", value: token)
+        } else {
+            deleteFromKeychain(key: "outlook_refresh_token")
+        }
+
+        // Non-secret config stays in JSON (no tokens)
         let config = OutlookConfig(
             clientId: clientId,
             tenantId: tenantId,
-            accessToken: accessToken,
-            refreshToken: refreshToken,
             tokenExpiry: tokenExpiry,
             userEmail: userEmail,
             userName: userName,
@@ -695,14 +752,30 @@ class OutlookCalendarService: NSObject, ObservableObject {
 
         clientId = config.clientId
         tenantId = config.tenantId
-        accessToken = config.accessToken
-        refreshToken = config.refreshToken
         tokenExpiry = config.tokenExpiry
         userEmail = config.userEmail
         userName = config.userName
         selectedCalendarId = config.selectedCalendarId
         lastSyncDate = config.lastSyncDate
         isAuthenticated = config.isAuthenticated
+
+        // Load tokens from macOS Keychain (not from JSON file)
+        accessToken = loadFromKeychain(key: "outlook_access_token")
+        refreshToken = loadFromKeychain(key: "outlook_refresh_token")
+
+        // Migrate tokens from old JSON config to Keychain if present
+        if accessToken == nil, let legacyToken = config.accessToken {
+            accessToken = legacyToken
+            saveToKeychain(key: "outlook_access_token", value: legacyToken)
+        }
+        if refreshToken == nil, let legacyToken = config.refreshToken {
+            refreshToken = legacyToken
+            saveToKeychain(key: "outlook_refresh_token", value: legacyToken)
+        }
+        // Re-save config without tokens to clean up legacy data
+        if config.accessToken != nil || config.refreshToken != nil {
+            saveConfiguration()
+        }
 
         // Refresh token if needed
         if isAuthenticated {
@@ -724,12 +797,12 @@ class OutlookCalendarService: NSObject, ObservableObject {
 extension OutlookCalendarService: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         #if os(macOS)
-        return NSApp.keyWindow ?? NSApp.windows.first!
+        return NSApp.keyWindow ?? NSApp.windows.first ?? NSWindow()
         #else
         return UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
-            .first { $0.isKeyWindow }!
+            .first { $0.isKeyWindow } ?? UIWindow()
         #endif
     }
 }
@@ -739,6 +812,8 @@ extension OutlookCalendarService: ASWebAuthenticationPresentationContextProvidin
 struct OutlookConfig: Codable {
     var clientId: String
     var tenantId: String
+    // accessToken and refreshToken are stored in macOS Keychain, not here.
+    // These fields remain for backward-compatible deserialization during migration only.
     var accessToken: String?
     var refreshToken: String?
     var tokenExpiry: Date?

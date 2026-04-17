@@ -30,6 +30,17 @@ class NovaAPIServer {
     let port: UInt16 = 37421
     private var listener: NWListener?
 
+    /// Local-only anti-CSRF bearer token (not a secret — just prevents drive-by POST from browser JS)
+    private let apiToken: String = {
+        let key = "NovaAPIToken"
+        if let existing = UserDefaults.standard.string(forKey: key), !existing.isEmpty {
+            return existing
+        }
+        let token = UUID().uuidString
+        UserDefaults.standard.set(token, forKey: key)
+        return token
+    }()
+
     private init() {}
 
     // MARK: - Lifecycle
@@ -106,6 +117,7 @@ class NovaAPIServer {
         let method: String
         let path: String
         let body: String
+        let headers: [String: String]
     }
 
     private func parseHTTPRequest(_ data: Data) -> HTTPRequest? {
@@ -124,15 +136,19 @@ class NovaAPIServer {
         let tokens = requestLine.components(separatedBy: " ")
         guard tokens.count >= 2 else { return nil }
 
-        // Check Content-Length to ensure body is fully received
-        if let clLine = headerLines.first(where: { $0.lowercased().hasPrefix("content-length:") }) {
-            let clStr = clLine.components(separatedBy: ":").dropFirst().joined(separator: ":").trimmingCharacters(in: .whitespaces)
-            if let contentLength = Int(clStr), body.utf8.count < contentLength {
-                return nil // Body not fully received yet
-            }
+        // Parse headers into dictionary (lowercase keys)
+        var hdrs: [String: String] = [:]
+        for line in headerLines.dropFirst() {
+            let kv = line.components(separatedBy: ": ")
+            if kv.count >= 2 { hdrs[kv[0].lowercased()] = kv.dropFirst().joined(separator: ": ") }
         }
 
-        return HTTPRequest(method: tokens[0], path: tokens[1], body: body)
+        // Check Content-Length to ensure body is fully received
+        if let clStr = hdrs["content-length"], let contentLength = Int(clStr), body.utf8.count < contentLength {
+            return nil // Body not fully received yet
+        }
+
+        return HTTPRequest(method: tokens[0], path: tokens[1], body: body, headers: hdrs)
     }
 
     // MARK: - Routing
@@ -140,6 +156,13 @@ class NovaAPIServer {
     private func route(_ request: HTTPRequest) async -> String {
         // Strip query string for path matching
         let pathOnly = request.path.components(separatedBy: "?").first ?? request.path
+
+        // Require bearer token for all POST requests (anti-CSRF)
+        if request.method == "POST" {
+            guard let auth = request.headers["authorization"], auth == "Bearer \(apiToken)" else {
+                return errorResponse(status: 401, message: "Unauthorized — missing or invalid Bearer token")
+            }
+        }
 
         switch (request.method, pathOnly) {
 
@@ -267,6 +290,7 @@ class NovaAPIServer {
         switch status {
         case 200: statusText = "OK"
         case 400: statusText = "Bad Request"
+        case 401: statusText = "Unauthorized"
         case 404: statusText = "Not Found"
         case 422: statusText = "Unprocessable Entity"
         case 500: statusText = "Internal Server Error"
@@ -277,7 +301,6 @@ class NovaAPIServer {
             "HTTP/1.1 \(status) \(statusText)",
             "Content-Type: \(contentType); charset=utf-8",
             "Content-Length: \(bodyBytes)",
-            "Access-Control-Allow-Origin: *",
             "Connection: close",
             "",
             body

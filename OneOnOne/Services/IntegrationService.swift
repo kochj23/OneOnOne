@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import Security
 
 @MainActor
 class IntegrationService: ObservableObject {
@@ -247,12 +248,66 @@ class IntegrationService: ObservableObject {
         }
     }
 
+    // MARK: - Keychain Helpers
+
+    private let keychainService = "com.jordankoch.OneOnOne.Integrations"
+
+    private func saveToKeychain(key: String, value: String) {
+        guard let data = value.data(using: .utf8) else { return }
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService
+        ]
+        SecItemDelete(query as CFDictionary)
+        guard !value.isEmpty else { return }
+        var addQuery = query
+        addQuery[kSecValueData as String] = data
+        SecItemAdd(addQuery as CFDictionary, nil)
+    }
+
+    private func loadFromKeychain(key: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private func deleteFromKeychain(key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecAttrService as String: keychainService
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+
     // MARK: - Configuration Persistence
 
     private func saveConfig() {
+        // Webhook URLs are secrets — store in Keychain, not JSON
+        if let slack = slackConfig {
+            saveToKeychain(key: "slack_webhook_url", value: slack.webhookURL)
+        } else {
+            deleteFromKeychain(key: "slack_webhook_url")
+        }
+        if let teams = teamsConfig {
+            saveToKeychain(key: "teams_webhook_url", value: teams.webhookURL)
+        } else {
+            deleteFromKeychain(key: "teams_webhook_url")
+        }
+
+        // Non-secret metadata stays in JSON (no webhook URLs)
         let config = IntegrationConfig(
-            slack: slackConfig,
-            teams: teamsConfig
+            slack: slackConfig.map { SlackConfigFile(defaultChannel: $0.defaultChannel, isEnabled: $0.isEnabled) },
+            teams: teamsConfig.map { TeamsConfigFile(isEnabled: $0.isEnabled) }
         )
 
         if let data = try? JSONEncoder().encode(config) {
@@ -266,29 +321,78 @@ class IntegrationService: ObservableObject {
             return
         }
 
-        slackConfig = config.slack
-        teamsConfig = config.teams
+        // Load webhook URLs from Keychain
+        let slackWebhook = loadFromKeychain(key: "slack_webhook_url")
+        let teamsWebhook = loadFromKeychain(key: "teams_webhook_url")
+
+        if let slack = config.slack {
+            // Migrate: if Keychain is empty but JSON had a webhook, migrate it
+            let webhook = slackWebhook ?? slack.legacyWebhookURL ?? ""
+            slackConfig = SlackConfig(webhookURL: webhook, defaultChannel: slack.defaultChannel, isEnabled: slack.isEnabled)
+            if slackWebhook == nil, let legacyURL = slack.legacyWebhookURL, !legacyURL.isEmpty {
+                saveToKeychain(key: "slack_webhook_url", value: legacyURL)
+            }
+        }
+        if let teams = config.teams {
+            let webhook = teamsWebhook ?? teams.legacyWebhookURL ?? ""
+            teamsConfig = TeamsConfig(webhookURL: webhook, isEnabled: teams.isEnabled)
+            if teamsWebhook == nil, let legacyURL = teams.legacyWebhookURL, !legacyURL.isEmpty {
+                saveToKeychain(key: "teams_webhook_url", value: legacyURL)
+            }
+        }
+
         isSlackConnected = slackConfig?.isEnabled ?? false
         isTeamsConnected = teamsConfig?.isEnabled ?? false
+
+        // Re-save to strip legacy webhook URLs from JSON if they were present
+        if config.slack?.legacyWebhookURL != nil || config.teams?.legacyWebhookURL != nil {
+            saveConfig()
+        }
     }
 }
 
 // MARK: - Models
 
-struct IntegrationConfig: Codable {
-    var slack: SlackConfig?
-    var teams: TeamsConfig?
-}
-
-struct SlackConfig: Codable {
+/// Runtime model with full data including Keychain-sourced webhook URLs
+struct SlackConfig {
     var webhookURL: String
     var defaultChannel: String
     var isEnabled: Bool
 }
 
-struct TeamsConfig: Codable {
+struct TeamsConfig {
     var webhookURL: String
     var isEnabled: Bool
+}
+
+/// File-safe config for JSON persistence (no webhook URLs — those go in Keychain)
+struct SlackConfigFile: Codable {
+    var defaultChannel: String
+    var isEnabled: Bool
+    // Legacy field for migration: read old files that had webhookURL in JSON
+    var legacyWebhookURL: String?
+
+    enum CodingKeys: String, CodingKey {
+        case defaultChannel
+        case isEnabled
+        case legacyWebhookURL = "webhookURL"
+    }
+}
+
+struct TeamsConfigFile: Codable {
+    var isEnabled: Bool
+    // Legacy field for migration
+    var legacyWebhookURL: String?
+
+    enum CodingKeys: String, CodingKey {
+        case isEnabled
+        case legacyWebhookURL = "webhookURL"
+    }
+}
+
+struct IntegrationConfig: Codable {
+    var slack: SlackConfigFile?
+    var teams: TeamsConfigFile?
 }
 
 enum IntegrationError: LocalizedError {
