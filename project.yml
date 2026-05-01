@@ -136,14 +136,38 @@ targets:
           - "@executable_path/Frameworks"
           - "@executable_path/../../Frameworks"
 
+  # macOS Test Target
+  OneOnOneTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: OneOnOneTests
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne.Tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OneOnOne.app/Contents/MacOS/OneOnOne"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    dependencies:
+      - target: OneOnOne
+
 schemes:
   OneOnOne:
     build:
       targets:
         OneOnOne: all
         OneOnOneWidget-macOS: all
+        OneOnOneTests: [test]
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - OneOnOneTests
     archive:
       config: Release
 

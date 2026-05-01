@@ -109,6 +109,8 @@ class CloudKitService: ObservableObject {
             isCloudAvailable = status == .available
             if !isCloudAvailable {
                 switch status {
+                case .available:
+                    break // Handled by the else branch above
                 case .noAccount:
                     syncError = "No iCloud account. Sign in to iCloud in System Settings to enable sync."
                 case .restricted:

@@ -30,7 +30,11 @@ class CalendarService: ObservableObject {
 
     func checkAuthorization() {
         let status = EKEventStore.authorizationStatus(for: .event)
-        isAuthorized = (status == .fullAccess || status == .authorized)
+        if #available(macOS 14.0, iOS 17.0, *) {
+            isAuthorized = (status == .fullAccess)
+        } else {
+            isAuthorized = (status == .authorized)
+        }
 
         if isAuthorized {
             loadCalendars()
@@ -165,7 +169,7 @@ class CalendarService: ObservableObject {
         let calendar = Calendar.current
 
         let startDate = Date()
-        let endDate = calendar.date(byAdding: .day, value: days, to: startDate) ?? startDate
+        let _ = calendar.date(byAdding: .day, value: days, to: startDate) ?? startDate
 
         let events = fetchUpcomingEvents(days: days)
 

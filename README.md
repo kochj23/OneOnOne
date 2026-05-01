@@ -1,6 +1,7 @@
 # OneOnOne
 
 ![Build](https://github.com/kochj23/OneOnOne/actions/workflows/build.yml/badge.svg)
+![Tests](https://img.shields.io/badge/tests-195%20passing-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20iOS%2017%2B-blue)
 ![Swift](https://img.shields.io/badge/swift-5.9-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -11,58 +12,100 @@ Written by Jordan Koch.
 
 ---
 
+## Screenshots
+
+![OneOnOne](screenshots/app-screenshot.png)
+
+---
+
 ## Architecture
 
-```
-+------------------------------------------------------------------+
-|                        OneOnOne.app                               |
-|                                                                   |
-|  +------------------+    +-------------------+    +-------------+ |
-|  |   SwiftUI Views  |    |    Services       |    |   Models    | |
-|  |                  |    |                   |    |             | |
-|  |  DashboardView   |    |  DataStore        |    |  Person     | |
-|  |  MeetingsView    |    |  AIService        |    |  Meeting    | |
-|  |  PeopleView      |    |  CloudKitService  |    |  ActionItem | |
-|  |  GoalsView       |    |  CalendarService  |    |  Goal       | |
-|  |  OKRView         |    |  SyncService      |    |  Objective  | |
-|  |  ActionItemsView |    |  RecordingService |    |  KeyResult  | |
-|  |  CareerView      |    |  IntegrationServ. |    |  Feedback   | |
-|  |  FeedbackView    |    |  TeamInsightsSvc  |    |  Skill      | |
-|  |  TeamInsightsView|    |  SearchService    |    |  Sentiment  | |
-|  |  AIInsightsView  |    |  WidgetSyncSvc    |    |  Recording  | |
-|  |  SettingsView    |    |  OLMImportService |    |  Template   | |
-|  |                  |    |                   |    |             | |
-|  |  +-- Markdown Components --+              |    |             | |
-|  |  | MarkdownNotesView      |              |    |             | |
-|  |  | CodeBlockView          |              |    |             | |
-|  |  | FormattingToolbar      |              |    |             | |
-|  |  | RichNotesEditor        |              |    |             | |
-|  |  | InlineMarkdownText     |              |    |             | |
-|  |  +------------------------+              |    |             | |
-|  +--------+---------+    +--------+----------+    +------+------+ |
-|           |                        |                      |       |
-|           +------------------------+----------------------+       |
-|                                    |                              |
-|  +---------------------+   +------+-------+   +--------------+   |
-|  | Nova API Server     |   | CloudKit     |   | WidgetKit    |   |
-|  | 127.0.0.1:37421     |   | iCloud Sync  |   | Extension    |   |
-|  | (macOS only)        |   | (all devices)|   | (macOS/iOS)  |   |
-|  +---------------------+   +--------------+   +--------------+   |
-+------------------------------------------------------------------+
-         |                          |                    |
-         v                          v                    v
-  +-------------+         +----------------+     +-------------+
-  | OpenClaw /  |         | iCloud Private |     | Home Screen |
-  | Nova AI     |         | Database       |     | Widgets     |
-  +-------------+         +----------------+     +-------------+
-         |
-         v
-  +----------------------------------------------+
-  |          Local AI Backends (macOS)            |
-  |                                              |
-  |  Ollama (:11434)    OpenWebUI (:3000)        |
-  |  MLX Toolkit (:8800)  TinyChat (:8000)       |
-  +----------------------------------------------+
+```mermaid
+graph TB
+    subgraph OneOnOne.app
+        subgraph Views["SwiftUI Views"]
+            DashboardView
+            MeetingsView
+            PeopleView
+            GoalsView
+            OKRView
+            ActionItemsView
+            CareerView
+            FeedbackView
+            TeamInsightsView
+            AIInsightsView
+            SettingsView
+            SearchView
+            subgraph Markdown["Markdown Components"]
+                MarkdownNotesView
+                CodeBlockView
+                FormattingToolbar
+                RichNotesEditor
+                InlineMarkdownText
+            end
+        end
+
+        subgraph Services
+            DataStore
+            AIService
+            CloudKitService
+            CalendarService
+            SyncService
+            RecordingService
+            IntegrationService
+            TeamInsightsService
+            SearchService
+            WidgetSyncService
+            OLMImportService
+            OutlookCalendarService
+        end
+
+        subgraph Models
+            Person
+            Meeting
+            ActionItem
+            Goal
+            Objective
+            KeyResult
+            Feedback
+            Skill
+            Sentiment
+            Recording
+            Template
+        end
+
+        NovaAPIServer["Nova API Server<br/>127.0.0.1:37421<br/>(macOS only)"]
+    end
+
+    Views --> Services
+    Services --> Models
+    Services --> DataStore
+
+    NovaAPIServer --> DataStore
+    NovaAPIServer --> AIService
+    CloudKitService --> iCloud["iCloud Private DB"]
+    WidgetSyncService --> Widget["WidgetKit Extension<br/>(macOS/iOS)"]
+    CalendarService --> Calendar["Calendar.app"]
+    IntegrationService --> Slack["Slack / Teams<br/>Webhooks"]
+
+    NovaAPIServer --> Nova["OpenClaw / Nova AI"]
+    Nova --> Backends
+
+    subgraph Backends["Local AI Backends (macOS)"]
+        Ollama[":11434 Ollama"]
+        OpenWebUI[":3000 OpenWebUI"]
+        MLXToolkit[":8800 MLX Toolkit"]
+        TinyChat[":8000 TinyChat"]
+    end
+
+    AIService --> Backends
+
+    style OneOnOne.app fill:#1a1a2e,stroke:#3BDAFC,color:#fff
+    style Views fill:#16213e,stroke:#9966FF,color:#fff
+    style Services fill:#16213e,stroke:#4DE094,color:#fff
+    style Models fill:#16213e,stroke:#FF9933,color:#fff
+    style Backends fill:#0f3460,stroke:#FF5999,color:#fff
+    style Markdown fill:#1a1a3e,stroke:#5AB3FF,color:#fff
 ```
 
 ---
@@ -526,6 +569,48 @@ Voice recordings are stored in `~/Library/Application Support/OneOnOne/Recording
 | Cmd+Shift+E | Export Data |
 | Cmd+Shift+I | Import Data |
 | Cmd+Option+S | Sync with iCloud |
+
+---
+
+## Test Suite
+
+OneOnOne includes a comprehensive XCTest suite with 195 tests covering unit, functional, security, and integration layers.
+
+### Running Tests
+
+```bash
+cd /path/to/OneOnOne
+xcodegen generate
+xcodebuild test -scheme OneOnOne -destination 'platform=macOS' -only-testing:OneOnOneTests
+```
+
+### Test Coverage
+
+| Test File | Category | Tests | What It Covers |
+|---|---|---:|---|
+| MeetingModelTests | Unit | 19 | Meeting init, duration formatting, action item counts, Equatable/Hashable, Codable, MeetingType, MeetingMood |
+| PersonModelTests | Unit | 17 | Person init, initials generation, displayTitle, avatar colors, MeetingFrequency calendar days, Codable |
+| ActionItemModelTests | Unit | 22 | ActionItem CRUD, markComplete/markIncomplete, overdue/dueSoon logic, Priority sort order, Decision, FollowUp |
+| GoalModelTests | Unit | 20 | Goal init, progress calculation from milestones, overdue detection, Milestone markComplete, GoalCategory, GoalStatus |
+| OKRModelTests | Unit | 19 | Objective progress, KeyResult metric types (increase/decrease/maintain/binary), formatting, cascading hierarchy |
+| FeedbackModelTests | Unit | 8 | Feedback init, FeedbackType/Direction, PraiseSummary ratio calculation |
+| SentimentModelTests | Unit | 19 | SentimentEntry overall score, stress penalty, floor-at-zero, RelationshipHealth levels, HealthTrend |
+| TemplateModelTests | Unit | 11 | Template agenda generation, built-in templates validation (count, names, durations), AgendaItem |
+| CareerDevelopmentModelTests | Unit | 14 | Skill gap analysis, CareerProfile training counts, SkillLevel, PromotionReadiness, TrainingType |
+| RecordingModelTests | Unit | 10 | Recording duration/size formatting, Transcription word count, TranscriptSegment time ranges |
+| ExportImportTests | Functional | 9 | ExportData round-trip Codable, empty collections, full-field export, JSON corruption handling, cross-model relationships |
+| SecurityTests | Security | 16 | Hardcoded credential scan (AWS/OpenAI/GitHub/Slack patterns), input sanitization (Unicode, XSS, SQL injection payloads), sensitive file detection, UUID validation, entitlements verification |
+| IntegrationTests | Integration | 11 | Nova API health check (port 37421), endpoint validation (status/people/meetings/404/401), SearchFilters, data flow, OKR cascading |
+
+### Test Categories
+
+**Unit Tests** (159 tests): Pure model and enum testing with no external dependencies. Fast, deterministic, run in under 1 second.
+
+**Functional Tests** (9 tests): Data serialization round-trips, relationship integrity, error handling for corrupt input.
+
+**Security Tests** (16 tests): Static analysis of source files for credential patterns, input fuzzing with malicious payloads, sensitive file detection, entitlement verification.
+
+**Integration Tests** (11 tests): Live health checks against the Nova API server on port 37421. These tests use `XCTSkip` when the app is not running, so they do not block CI but validate the full stack locally.
 
 ---
 

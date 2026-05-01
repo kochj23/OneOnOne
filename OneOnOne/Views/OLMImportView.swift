@@ -599,7 +599,7 @@ struct OLMImportView: View {
             let existingMeetings = dataStore.meetings
             var importedMeetings: [Meeting] = []
             var skippedCount = 0
-            var failedCount = 0
+            let failedCount = 0
 
             for (index, event) in events.enumerated() {
                 // Skip if already imported
