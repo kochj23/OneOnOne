@@ -1,5 +1,7 @@
 # OneOnOne
 
+> **Note:** The Nova API functionality of this app (port 37421) has been retired. All meeting data access and AI summarization for Nova is now handled by [NovaControl](https://github.com/kochj23/NovaControl) on port 37400. This app no longer needs to be running for Nova to access meeting data or generate summaries.
+
 ![Build](https://github.com/kochj23/OneOnOne/actions/workflows/build.yml/badge.svg)
 ![Tests](https://img.shields.io/badge/tests-195%20passing-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20iOS%2017%2B-blue)
