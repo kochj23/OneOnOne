@@ -1,0 +1,200 @@
+name: OneOnOne
+options:
+  bundleIdPrefix: com.jordankoch
+  deploymentTarget:
+    macOS: "14.0"
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    MARKETING_VERSION: "2.2.0"
+    CURRENT_PROJECT_VERSION: "2"
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: "QRRCB8HB3W"
+
+targets:
+  # macOS Target
+  OneOnOne:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: OneOnOne
+        excludes:
+          - "**/.DS_Store"
+      - path: Python
+        excludes:
+          - "**/.DS_Store"
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: OneOnOne/OneOnOne.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_HARDENED_RUNTIME: YES
+        COMBINE_HIDPI_IMAGES: YES
+    dependencies:
+      - target: OneOnOneWidget-macOS
+        embed: true
+
+  # macOS Widget Extension
+  OneOnOneWidget-macOS:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: "OneOnOne Widget"
+        excludes:
+          - "**/.DS_Store"
+      - path: OneOnOne/Models/Person.swift
+      - path: OneOnOne/Models/Meeting.swift
+      - path: OneOnOne/Models/ActionItem.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne.Widget
+        PRODUCT_NAME: OneOnOne Widget
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: "OneOnOne Widget/Info.plist"
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne Widget"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: "OneOnOne Widget/OneOnOne_Widget.entitlements"
+        SKIP_INSTALL: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/../Frameworks"
+          - "@executable_path/../../../../Frameworks"
+
+  # iOS Target
+  OneOnOne-iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: OneOnOne
+        excludes:
+          - "**/.DS_Store"
+          - "**/ai_daemon.py"
+          - "**/whisper_transcribe.py"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_NSCalendarsUsageDescription: "OneOnOne needs access to your calendar to create and sync meeting events."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "OneOnOne needs microphone access to record meeting audio."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: OneOnOne/OneOnOne-iOS.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+    dependencies:
+      - target: OneOnOneWidget-iOS
+        embed: true
+
+  # iOS Widget Extension
+  OneOnOneWidget-iOS:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: "OneOnOne Widget"
+        excludes:
+          - "**/.DS_Store"
+      - path: OneOnOne/Models/Person.swift
+      - path: OneOnOne/Models/Meeting.swift
+      - path: OneOnOne/Models/ActionItem.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne.Widget
+        PRODUCT_NAME: OneOnOne Widget
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: "OneOnOne Widget/Info.plist"
+        INFOPLIST_KEY_CFBundleDisplayName: "OneOnOne Widget"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Jordan Koch. All rights reserved."
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: "OneOnOne Widget/OneOnOne_Widget.entitlements"
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@executable_path/../../Frameworks"
+
+  # macOS Test Target
+  OneOnOneTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: OneOnOneTests
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jordankoch.OneOnOne.Tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OneOnOne.app/Contents/MacOS/OneOnOne"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    dependencies:
+      - target: OneOnOne
+
+schemes:
+  OneOnOne:
+    build:
+      targets:
+        OneOnOne: all
+        OneOnOneWidget-macOS: all
+        OneOnOneTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - OneOnOneTests
+    archive:
+      config: Release
+
+  OneOnOne-iOS:
+    build:
+      targets:
+        OneOnOne-iOS: all
+        OneOnOneWidget-iOS: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+  OneOnOneWidget-macOS:
+    build:
+      targets:
+        OneOnOneWidget-macOS: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+  OneOnOneWidget-iOS:
+    build:
+      targets:
+        OneOnOneWidget-iOS: all
+    run:
+      config: Debug
+    archive:
+      config: Release
