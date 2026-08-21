@@ -79,7 +79,24 @@ class CloudKitService: ObservableObject {
         }
     }
 
+    /// True when running inside an XCTest host. Unsigned test/CI host apps have no
+    /// valid iCloud entitlement, so `CKContainer(identifier:)` os_crashes the host
+    /// on launch (EXC_BREAKPOINT) before any test runs. Detected two ways for
+    /// robustness across `xcodebuild test` and CI.
+    static var isRunningUnderTests: Bool {
+        NSClassFromString("XCTestCase") != nil
+            || ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
     private func setupContainer() {
+        // Skip CloudKit under XCTest — see `isRunningUnderTests`. Sync is disabled
+        // gracefully instead of crashing; production launches are unaffected.
+        guard !Self.isRunningUnderTests else {
+            isConfigured = false
+            isCloudAvailable = false
+            syncError = "iCloud sync disabled under tests"
+            return
+        }
         container = CKContainer(identifier: "iCloud.com.jordankoch.OneOnOne")
         if let container = container {
             privateDatabase = container.privateCloudDatabase

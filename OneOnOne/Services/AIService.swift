@@ -43,6 +43,37 @@ class AIService: ObservableObject {
     @Published var mlxModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
     @Published var tinyChatEndpoint = "http://localhost:8000"
 
+    // MARK: - Multi-model load balancing (frontier + Nova Gateway + all-local balancing)
+
+    /// Spread work across every discovered local model (Ollama + MLX).
+    @Published var useAllLocalModels: Bool = false
+    /// Add OpenRouter's full frontier-model list to the balancer pool.
+    @Published var enableAllFrontierModels: Bool = false
+    /// Route through Nova Gateway (optional; never required — failed health = skipped).
+    @Published var useNovaGateway: Bool = false
+    /// Nova Gateway base URL (OpenAI-compatible, inherits Nova's own routing).
+    @Published var novaGatewayURL: String = ModelRegistry.novaGatewayDefaultURL
+    /// OpenRouter model list for the picker (falls back to the popular set).
+    @Published var openRouterModels: [String] = OpenRouterProvider.fallbackModels
+    /// Currently-selected single OpenRouter model (used outside the balanced pool).
+    @Published var selectedOpenRouterModel: String = OpenRouterProvider.defaultModel
+
+    /// Pure, network-free balancer that spreads work across the enabled pool.
+    let balancer = LoadBalancer()
+    /// Balancer policy (least-busy mirrors how Nova's gateway spreads load).
+    var balancerPolicy: BalancerPolicy = .leastBusy
+    /// Keychain-backed store for the OpenRouter API key (never in UserDefaults).
+    let openRouterKeychain = KeychainStore()
+
+    /// Models discovered for the balancer pool (for the settings summary).
+    @Published var discoveredModels: [DiscoveredModel] = []
+
+    /// True when any load-balancing toggle is on, so a request should route
+    /// through the balanced dispatch rather than the single-provider path.
+    var isBalancingEnabled: Bool {
+        useAllLocalModels || enableAllFrontierModels || useNovaGateway
+    }
+
     // MARK: - MLX Daemon (for local MLX inference)
 
     #if os(macOS)
@@ -385,6 +416,17 @@ class AIService: ObservableObject {
 
         defer { isProcessing = false }
 
+        // Load-balanced mode: when any balancing toggle is on, spread work across
+        // the healthy enabled pool (all local models + OpenRouter frontier + Nova
+        // Gateway). Resilient — returns nil when no pool/healthy model exists so we
+        // fall through cleanly to the single-provider path below (Nova is never
+        // required, and plain Ollama keeps working).
+        if isBalancingEnabled {
+            if let balanced = await generateBalanced(prompt: prompt, maxTokens: maxTokens) {
+                return balanced
+            }
+        }
+
         // Check if selected provider is available
         if !isProviderAvailable(selectedProvider) {
             // Try to find an available provider
@@ -616,6 +658,14 @@ class AIService: ObservableObject {
            let aiProvider = AIProvider(rawValue: provider) {
             selectedProvider = aiProvider
         }
+
+        // Multi-model load balancing
+        let defaults = UserDefaults.standard
+        useAllLocalModels = defaults.object(forKey: "useAllLocalModels") as? Bool ?? false
+        enableAllFrontierModels = defaults.object(forKey: "enableAllFrontierModels") as? Bool ?? false
+        useNovaGateway = defaults.object(forKey: "useNovaGateway") as? Bool ?? false
+        if let url = defaults.string(forKey: "novaGatewayURL") { novaGatewayURL = url }
+        if let model = defaults.string(forKey: "selectedOpenRouterModel") { selectedOpenRouterModel = model }
     }
 
     func saveConfiguration() {
@@ -627,6 +677,13 @@ class AIService: ObservableObject {
         UserDefaults.standard.set(mlxModel, forKey: "mlxModel")
         UserDefaults.standard.set(tinyChatEndpoint, forKey: "tinyChatEndpoint")
         UserDefaults.standard.set(selectedProvider.rawValue, forKey: "aiProvider")
+
+        // Multi-model load balancing
+        UserDefaults.standard.set(useAllLocalModels, forKey: "useAllLocalModels")
+        UserDefaults.standard.set(enableAllFrontierModels, forKey: "enableAllFrontierModels")
+        UserDefaults.standard.set(useNovaGateway, forKey: "useNovaGateway")
+        UserDefaults.standard.set(novaGatewayURL, forKey: "novaGatewayURL")
+        UserDefaults.standard.set(selectedOpenRouterModel, forKey: "selectedOpenRouterModel")
     }
 }
 
@@ -699,6 +756,8 @@ struct AISettingsView: View {
     @State private var isChecking = false
     @State private var ollamaModels: [String] = []
     @State private var isFetchingModels = false
+    @State private var openRouterKeyDraft = ""
+    @State private var keySaved = false
 
     var body: some View {
         Form {
@@ -746,6 +805,79 @@ struct AISettingsView: View {
                     }
                 }
                 .disabled(isChecking)
+            }
+
+            // MARK: Multi-Model Load Balancing
+
+            Section(header: Text("Frontier Models — OpenRouter")) {
+                HStack {
+                    SecureField("sk-or-...", text: $openRouterKeyDraft)
+                    Button(keySaved ? "Saved" : "Save") {
+                        aiService.setOpenRouterAPIKey(openRouterKeyDraft)
+                        keySaved = true
+                        Task {
+                            await aiService.fetchOpenRouterModels()
+                            aiService.saveConfiguration()
+                        }
+                    }
+                    .disabled(openRouterKeyDraft.isEmpty)
+                }
+                Text("Your key is stored securely in the macOS Keychain — never in plain settings. Get one at openrouter.ai/keys.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if aiService.hasOpenRouterKey {
+                    Picker("Model", selection: $aiService.selectedOpenRouterModel) {
+                        ForEach(aiService.openRouterModels, id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                    }
+                    .onChange(of: aiService.selectedOpenRouterModel) { _, _ in aiService.saveConfiguration() }
+
+                    Button("Remove key") {
+                        aiService.setOpenRouterAPIKey("")
+                        openRouterKeyDraft = ""
+                        keySaved = false
+                    }
+                    .foregroundColor(.red)
+                }
+            }
+
+            Section(header: Text("Multi-Model Load Balancing")) {
+                Toggle("Use all local models (Ollama + MLX)", isOn: $aiService.useAllLocalModels)
+                    .onChange(of: aiService.useAllLocalModels) { _, _ in aiService.saveConfiguration() }
+                Text("Spread AI requests (including meeting summaries) across every discovered Ollama + MLX model on this Mac.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Toggle("Enable all frontier models", isOn: $aiService.enableAllFrontierModels)
+                    .disabled(!aiService.hasOpenRouterKey)
+                    .onChange(of: aiService.enableAllFrontierModels) { _, _ in aiService.saveConfiguration() }
+                Text(aiService.hasOpenRouterKey
+                     ? "Add OpenRouter's full frontier-model list to the balancer pool."
+                     : "Add an OpenRouter key above to enable frontier models in the pool.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Toggle("Route through Nova Gateway (optional)", isOn: $aiService.useNovaGateway)
+                    .onChange(of: aiService.useNovaGateway) { _, _ in aiService.saveConfiguration() }
+                if aiService.useNovaGateway {
+                    TextField("Nova Gateway URL", text: $aiService.novaGatewayURL)
+                        .textContentType(.URL)
+                        .onChange(of: aiService.novaGatewayURL) { _, _ in aiService.saveConfiguration() }
+                }
+                Text("Nova Gateway is OpenAI-compatible and inherits Nova's own routing (default 127.0.0.1:18792). Optional — if it is unreachable it is simply skipped.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if !aiService.discoveredModels.isEmpty {
+                    Text("\(aiService.discoveredModels.count) model(s) in the balancer pool")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+                Button("Refresh model pool") {
+                    Task { _ = await aiService.discoverEnabledPool() }
+                }
             }
 
             Section(header: Text("Ollama")) {
