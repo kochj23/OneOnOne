@@ -12,6 +12,13 @@ import XCTest
 
 final class IntegrationTests: XCTestCase {
 
+    /// The Nova API server requires a Bearer token on the PII-exposing endpoints
+    /// (/api/people, /api/meetings*). Tests read the same locally-generated token
+    /// the server persists in UserDefaults so authenticated GETs return data.
+    private func novaAPIAuthHeader() -> String {
+        "Bearer \(UserDefaults.standard.string(forKey: "NovaAPIToken") ?? "")"
+    }
+
     // MARK: - Nova API Server Health Check (port 37421)
 
     /// Attempts a health-check GET /api/status on the local Nova API server.
@@ -43,6 +50,7 @@ final class IntegrationTests: XCTestCase {
     func testNovaAPIPeopleEndpoint() async throws {
         let url = URL(string: "http://127.0.0.1:37421/api/people")!
         var request = URLRequest(url: url)
+        request.setValue(novaAPIAuthHeader(), forHTTPHeaderField: "Authorization")
         request.timeoutInterval = 3
 
         do {
@@ -63,6 +71,7 @@ final class IntegrationTests: XCTestCase {
     func testNovaAPIMeetingsEndpoint() async throws {
         let url = URL(string: "http://127.0.0.1:37421/api/meetings?limit=5")!
         var request = URLRequest(url: url)
+        request.setValue(novaAPIAuthHeader(), forHTTPHeaderField: "Authorization")
         request.timeoutInterval = 3
 
         do {
@@ -82,6 +91,7 @@ final class IntegrationTests: XCTestCase {
     func testNovaAPIInvalidMeetingUUID() async throws {
         let url = URL(string: "http://127.0.0.1:37421/api/meetings/not-a-uuid")!
         var request = URLRequest(url: url)
+        request.setValue(novaAPIAuthHeader(), forHTTPHeaderField: "Authorization")
         request.timeoutInterval = 3
 
         do {
