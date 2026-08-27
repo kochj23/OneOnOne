@@ -157,8 +157,11 @@ class NovaAPIServer {
         // Strip query string for path matching
         let pathOnly = request.path.components(separatedBy: "?").first ?? request.path
 
-        // Require bearer token for all POST requests (anti-CSRF)
-        if request.method == "POST" {
+        // Require bearer token for all state-changing POSTs (anti-CSRF) and for GET
+        // endpoints that expose PII (people, meetings, meeting notes).
+        let requiresAuth = request.method == "POST"
+            || (request.method == "GET" && (pathOnly == "/api/people" || pathOnly.hasPrefix("/api/meetings")))
+        if requiresAuth {
             guard let auth = request.headers["authorization"], auth == "Bearer \(apiToken)" else {
                 return errorResponse(status: 401, message: "Unauthorized — missing or invalid Bearer token")
             }
